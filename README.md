@@ -1,5 +1,7 @@
-# OLD_RM_STYLE
-Make a RM2K(3)-like game with RMVXAce!
+[Join us on Discord !](https://discord.gg/yRUZcdQ)
+
+# [![RMEx](http://rmex.github.io/images/rmex-shortcut.png)](http://rmex.github.io) [ORMS : Old RPG Maker Style](https://github.com/RMEx/OLD_RM_STYLE/blob/master/OLD_RM_STYLE.rb)
+> Make a RM2K(3)-like game with RMVXAce!
 
 ---
 
