@@ -38,7 +38,7 @@ module ORMS_CONFIG
   LINE_HEIGHT           = 32    # Line height: VXAce: 24  2K(3): 32
   PADDING               = 16    # Padding:     VXAce: 12  2K(3): 16
   SHADOW                = true  # Draw text shadow using the last color in "Font_color.png"
-  REWRITE_ALL_TEXTS     = false # Rewrite Bitmap.draw_text instead of Window_Base.draw_text
+  REWRITE_ALL_TEXTS     = true  # Rewrite Bitmap.draw_text instead of Window_Base.draw_text
                                 #   Try this only if you have problem of compatibility
                                 #   Can create other problems... It's like blue/red pills!
 # BOX_FEATURES:
