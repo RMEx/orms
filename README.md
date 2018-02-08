@@ -80,7 +80,7 @@ After that you need to have **all the bottom line transparent** for all the char
 
 ![Fony](https://cdn.discordapp.com/attachments/166299388799483904/410159035229405195/unknown.png)
 
-6. Save your new font, and do *File > Export > Bitmap*, save as "Font.png" in `Graphics/System/`
+6. Save your new font, and do **File > Export > Bitmap**, save as "Font.png" in `Graphics/System/`
 
 The you get A SHINY PERFECT NEW "FONT.PNG" YOU CAN EDIT BACK WITH FONY ULTRA QUICKLY ANYTIME!!
 
@@ -104,3 +104,9 @@ And since the height is now smaller, you can also reduce the line height :
 ```
   LINE_HEIGHT           = 24    # Line height: VXAce: 24  2K(3): 32
 ```
+
+---
+
+## COMING SOON
+
+Why not a tiny tool to convert RM2K(3)'s Chipset to VXAce's Tilesets? :)
