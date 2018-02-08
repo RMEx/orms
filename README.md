@@ -82,11 +82,11 @@ After that you need to have **all the bottom line transparent** for all the char
 
 6. Save your new font, and do **File > Export > Bitmap**, save as "Font.png" in `Graphics/System/`
 
-The you get A SHINY PERFECT NEW "FONT.PNG" YOU CAN EDIT BACK WITH FONY ULTRA QUICKLY ANYTIME!!
+Then you get A SHINY PERFECT NEW "FONT.PNG" YOU CAN EDIT BACK WITH FONY ULTRA QUICKLY ANYTIME!!
 
 ![Font](http://image.noelshack.com/fichiers/2018/06/1/1517860144-awesome-font.png)
 
-Instead of **6\*14** like RM200(3), this one is **7\*11** (just count the pixels in fony), you can specify that in my script :
+Instead of **6\*14** like RM200(3), this one is **7\*11** (just count the pixels in Fony), you can specify that in my script :
 
 ```
 # BITMAP_FONT_FEATURE_OPTIONS:
