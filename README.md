@@ -41,9 +41,12 @@ All texts will be rendered using the two pictures below if `ORMS_CONFIG::BMP_FON
 
 ## EXAMPLES
 
-![Screenshot](https://cdn.discordapp.com/attachments/166299388799483904/409864757743452171/unknown.png)
+![Screenshot](https://cdn.discordapp.com/attachments/410124292244766741/410207355993849867/unknown.png)
+![Screenshot](https://cdn.discordapp.com/attachments/410124292244766741/410206525961797644/unknown.png)
 ![Screenshot](https://cdn.discordapp.com/attachments/166299388799483904/409870616691212289/unknown.png)
 ![Screenshot](https://cdn.discordapp.com/attachments/166299388799483904/409871176681127936/unknown.png)
+![Screenshot](https://cdn.discordapp.com/attachments/410183660520865793/410261416956657675/unknown.png)
+
 
 ---
 
@@ -54,6 +57,9 @@ The Font.png is generated with the awesome tool [Fony](https://fony.en.softonic.
 For example :
 
 1. load "Bilou2k3.fon" with Fony
+
+![Fony](https://cdn.discordapp.com/attachments/409692938164240385/409863729895702528/unknown.png)
+
 2. Use **Edit > resize** to make a smaller font in height
 
 ![Fony](https://cdn.discordapp.com/attachments/166299388799483904/410158056631173121/unknown.png)
@@ -64,7 +70,7 @@ For example :
 
 ![Fony](https://cdn.discordapp.com/attachments/166299388799483904/410158494935810048/unknown.png)
 
-After that you need to have *all the bottom line transparent* for all the characters, to render the text shadow without trouble after
+After that you need to have **all the bottom line transparent** for all the characters, to render the text shadow without trouble after
 
 4. Select all the characters in the right pannel
 
