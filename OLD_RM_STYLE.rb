@@ -1,25 +1,37 @@
 # -*- coding: utf-8 -*-
 #==============================================================================
-# ** OLD_RM_TEXT  V. 1.0.2
+# ** OLD_RM_STYLE  V. 1.0.3
 #------------------------------------------------------------------------------
-# Joke <joke@biloucorp.com>
+# By Joke @biloumaster <joke@biloucorp.com>
+# GitHub: https://github.com/RMEx/OLD_RM_STYLE
 #------------------------------------------------------------------------------
 # Make a RM2K(3)-like game with RMVXAce!
-# Use "Graphics/System/Font.png" and "Graphics/System/Font_color.png"
+#
+# - Can use "Graphics/System/Font.png" and "Graphics/System/Font_color.png" to
+#   write awesome OldSchool texts
+# - Can make the window box opaque (like RM2K) and/or stop the cursor blinking
+# - Can display the choice list inside the dialogue like RM2K(3)
+# - Can set shortcuts F4: toggle fullscreen, F5: toggle AWESOME TINY WINDOW MODE
+# - Can pixelate the screen display (for the care of the detail)
+# - Can set the resolution to 640*480 (okay, it's just one line BUT YES IT CAN)
+# - Can use RM2K(3) graphics directly (set all RESSOURCES_FEATURES to "true")
+# - Can deactivate the dash (shift)
+#
+# This script is compatible with RME (RMEx) and Fullscreen++ (Zeus81)
+#
+# In short ... configure it!
 #==============================================================================
 
 #==============================================================================
-# ** Configuration
-#------------------------------------------------------------------------------
-#  "OLDSCHOOL_CHOICE_LIST" : Display choice list like RM2003 did!
+# ** CONFIGURATION
 #==============================================================================
 
 module ORMS_CONFIG
 
-# BITMAP_FONT:
-  BITMAP_FONT           = true  # Use BMP Font if true
+# BITMAP_FONT_FEATURE:
+  BITMAP_FONT           = true  # Use the bitmap font picture to draw texts if true
 
-# BITMAP_FONT_OPTIONS:
+# BITMAP_FONT_FEATURE_OPTIONS:
   FONT_WIDTH            = 6     # See BMP Font character's width
   FONT_HEIGHT           = 14    # See BMP Font character's height
   DOUBLE_FONT_SIZE      = true  # Double the BMP Font Size if true
@@ -29,17 +41,17 @@ module ORMS_CONFIG
   REWRITE_ALL_TEXTS     = false # Rewrite Bitmap.draw_text instead of Window_Base.draw_text
                                 #   Try this only if you have problem of compatibility
                                 #   Can create other problems... It's like blue/red pills!
-# BOX_OPTIONS:
+# BOX_FEATURES:
   OPAQUE_BOX            = false # Opaque text box if true
-  CURSOR_BLINKING       = false # Stop cursor blinking if false
+  STOP_CURSOR_BLINKING  = true  # Stop cursor blinking if false
   OLDSCHOOL_CHOICE_LIST = true  # RM2K(3)-like choice list like if true
 
-# SCREEN_OPTIONS:
-  TOGGLE_SCREEN_INPUT   = false # RM2K(3)-like F4 and F5 input
+# SCREEN_FEATURES:
+  TOGGLE_SCREEN_INPUT   = true  # RM2K(3)-like F4 and F5 input (TINY WINDOW WITH F5!!!)
   PIXELATE_SCREEN       = false # If you want fat pixels everywhere
   OLD_RESOLUTION        = false # Just set game resolution to 640*480
 
-# RESSOURCES_OPTIONS
+# RESSOURCES_FEATURES:
   USE_OLD_RM_BACKDROP   = false # Battlebacks1/2 auto-resized by two
   USE_OLD_RM_MONSTER    = false # Battlers auto-resized by two
   USE_OLD_RM_PANORAMA   = false # Parallaxes auto-resized by two
@@ -47,13 +59,19 @@ module ORMS_CONFIG
   USE_OLD_RM_TITLE      = false # Titles1/2 auto-resized by two
   USE_OLD_RM_CHARSET    = false # Characters auto-resized by two
   KILL_CHARSET_SHIFT_Y  = false # Does as if all "Characters" had "!" in their name
-  FIX_CHARSET_DIRECTION = false # In VXAce's ressources, directions are "DOWN, LEFT, RIGHT, UP"
+  OLD_CHARSET_DIRECTION = false # In VXAce's ressources, directions are "DOWN, LEFT, RIGHT, UP"
                                 #   but in RM2k(3)'s ressources, it's "UP, RIGHT, DOWN, LEFT"
                                 #   this fix allows you to use directly charsets from 2k(3)!
+# DESTROY_NEW_RM_FEATURE:
+  DEACTIVATE_DASH       = false # No dash when you press shift if true
+
 end
 
 #==============================================================================
 # ** BITMAP_FONT and USE_OLD_RM_*
+#------------------------------------------------------------------------------
+#  BITMAP_FONT: Use the bitmap font picture to draw texts
+#  USE_OLD_RM_*: See ORMS_CONFIG > RESSOURCES_FEATURES above
 #==============================================================================
 
 #==============================================================================
@@ -61,7 +79,7 @@ end
 #------------------------------------------------------------------------------
 #  This module loads graphics, creates bitmap objects, and retains them.
 # Now it can double the size of bitmaps specified in ORMS_CONFIG at loading
-# And it generates and retains the BITMAP_FONT
+# and it generates and retains the BITMAP_FONT
 #==============================================================================
 
 module Cache
@@ -126,11 +144,11 @@ module Cache
         return load_2k_bitmap(*args) if ORMS_CONFIG::USE_OLD_RM_MONSTER
       when "Graphics/Characters/"
         return load_2k_bitmap(*args) if ORMS_CONFIG::USE_OLD_RM_CHARSET
-      when "Graphics/Parallaxes"
+      when "Graphics/Parallaxes/"
         return load_2k_bitmap(*args) if ORMS_CONFIG::USE_OLD_RM_PANORAMA
-      when "Graphics/Pictures"
+      when "Graphics/Pictures/"
         return load_2k_bitmap(*args) if ORMS_CONFIG::USE_OLD_RM_PICTURE
-      when "Graphics/Titles1", "Graphics/Titles2"
+      when "Graphics/Titles1/", "Graphics/Titles2/"
         return load_2k_bitmap(*args) if ORMS_CONFIG::USE_OLD_RM_TITLE
       end
       orms_load_bitmap(*args)
@@ -164,6 +182,8 @@ end
 
 #==============================================================================
 # ** BITMAP_FONT
+#------------------------------------------------------------------------------
+#  Use the bitmap font picture to draw texts
 #==============================================================================
 
 if ORMS_CONFIG::BITMAP_FONT
@@ -183,8 +203,6 @@ module ORMS_Bitmap_Font
   class << self
     #--------------------------------------------------------------------------
     # * Included
-    #     Callback invoked whenever the receiver is included in another module
-    #     or class.
     #--------------------------------------------------------------------------
     def included(base)
       base.class_eval do
@@ -195,11 +213,11 @@ module ORMS_Bitmap_Font
           s = ORMS_CONFIG::DOUBLE_FONT_SIZE ? 2 : 1
           w = ORMS_CONFIG::FONT_WIDTH
           h = ORMS_CONFIG::FONT_HEIGHT
+          return Rect.new(0, 0, s * w, s * h) unless str
           Rect.new(0, 0, s * w * str.length, s * h)
         end
         #--------------------------------------------------------------------------
         # * Draw Text
-        #     args : Same as Bitmap#draw_text. but in addition [, color_id] (default = 0)
         #--------------------------------------------------------------------------
         def draw_text(*args)
           if args.length.between?(2,4)
@@ -244,14 +262,11 @@ end
 
 #==============================================================================
 # ** Window_Base
-#------------------------------------------------------------------------------
-#  This is a super class of all windows within the game.
 #==============================================================================
 
 class Window_Base
   #--------------------------------------------------------------------------
   # * Get Text Color
-  #     n : Text color number (0..31)
   #--------------------------------------------------------------------------
   def text_color(n)
     @color_id = n
@@ -259,7 +274,6 @@ class Window_Base
   end
   #--------------------------------------------------------------------------
   # * Draw Text
-  #     args : Same as Bitmap#draw_text.
   #--------------------------------------------------------------------------
   def draw_text(*args)
     args.push(0) if args.length == 2 || args.length == 5
@@ -278,14 +292,12 @@ class Window_Base
   def tp_cost_color;     text_color(9);   end;    # TP cost
   #--------------------------------------------------------------------------
   # * Change Text Drawing Color
-  #     enabled : Enabled flag. When false, draw semi-transparently.
   #--------------------------------------------------------------------------
   def change_color(color, enabled = true)
     contents.font.color.set(enabled ? color : text_color(3))
   end
   #--------------------------------------------------------------------------
   # * Calculate Line Height
-  #     (font_size is killed so it does not calculate anything)
   #--------------------------------------------------------------------------
   def calc_line_height(text, restore_font_size = true)
     return line_height
@@ -306,14 +318,11 @@ end
 
 #==============================================================================
 # ** Window_Message
-#------------------------------------------------------------------------------
-#  This message window is used to display text.
 #==============================================================================
 
 class Window_Message
   #--------------------------------------------------------------------------
   # * Draw Face Graphic
-  #     enabled : Enabled flag. When false, draw semi-transparently.
   #--------------------------------------------------------------------------
   alias_method :orms_draw_face, :draw_face
   def draw_face(*args)
@@ -337,8 +346,6 @@ end
 
 #==============================================================================
 # ** Window_MenuStatus
-#------------------------------------------------------------------------------
-#  This window displays party member status on the menu screen.
 #==============================================================================
 
 class Window_MenuStatus
@@ -357,8 +364,6 @@ end
 
 #==============================================================================
 # ** Window_TitleCommand
-#------------------------------------------------------------------------------
-#  This window is for selecting New Game/Continue on the title screen.
 #==============================================================================
 
 class Window_TitleCommand
@@ -383,14 +388,14 @@ end
 
 #==============================================================================
 # ** OPAQUE_BOX
+#------------------------------------------------------------------------------
+#  Opaque text box
 #==============================================================================
 
 if ORMS_CONFIG::OPAQUE_BOX
 
 #==============================================================================
 # ** Window_Base
-#------------------------------------------------------------------------------
-#  This is a super class of all windows within the game.
 #==============================================================================
 
 class Window_Base
@@ -407,21 +412,20 @@ end
 end
 
 #==============================================================================
-# ** CURSOR_BLINKING
+# ** STOP_CURSOR_BLINKING
+#------------------------------------------------------------------------------
+#  Stop cursor blinking
 #==============================================================================
 
-if !ORMS_CONFIG::CURSOR_BLINKING
+if ORMS_CONFIG::STOP_CURSOR_BLINKING
 
 #==============================================================================
 # ** Window
-#------------------------------------------------------------------------------
-#  The game window class. Created internally from multiple sprites.
 #==============================================================================
 
 class Window
   #--------------------------------------------------------------------------
-  # * The cursor's blink status. If TRUE, the cursor is blinking.
-  #     The default is TRUE, but this hack turn this FALSE anytime.
+  # * The cursor's blink status
   #--------------------------------------------------------------------------
   def active
     @active
@@ -432,8 +436,7 @@ class Window
     @active = index
   end
   #--------------------------------------------------------------------------
-  # * The cursor box (Rect).
-  #     Specifies a rectangle with coordinates based on the window's contents.
+  # * The cursor box (Rect)
   #--------------------------------------------------------------------------
   alias_method :orms_blink_cursor_rect, :cursor_rect
   def cursor_rect
@@ -446,14 +449,14 @@ end
 
 #==============================================================================
 # ** OLDSCHOOL_CHOICE_LIST
+#------------------------------------------------------------------------------
+#  RM2K(3)-like choice list like
 #==============================================================================
 
 if ORMS_CONFIG::OLDSCHOOL_CHOICE_LIST
 
 #==============================================================================
 # ** Window_Base
-#------------------------------------------------------------------------------
-#  This is a super class of all windows within the game.
 #==============================================================================
 
 class Window_Base
@@ -481,8 +484,6 @@ end
 
 #==============================================================================
 # ** Window_Message
-#------------------------------------------------------------------------------
-#  This message window is used to display text.
 #==============================================================================
 
 class Window_Message
@@ -498,8 +499,6 @@ end
 
 #==============================================================================
 # ** Window_ChoiceList
-#------------------------------------------------------------------------------
-#  This window is used for the event command [Show Choices].
 #==============================================================================
 
 class Window_ChoiceList
@@ -532,16 +531,17 @@ end
 end
 
 #==============================================================================
-# ** FIX_CHARSET_DIRECTION
+# ** OLD_CHARSET_DIRECTION
+#------------------------------------------------------------------------------
+#  In VXAce's ressources, directions are "DOWN, LEFT, RIGHT, UP"
+# but in RM2k(3)'s ressources, it's "UP, RIGHT, DOWN, LEFT"
+# this fix allows you to use directly charsets from 2k(3)!
 #==============================================================================
 
-if ORMS_CONFIG::FIX_CHARSET_DIRECTION
+if ORMS_CONFIG::OLD_CHARSET_DIRECTION
 
 #==============================================================================
 # ** Sprite_Character
-#------------------------------------------------------------------------------
-#  This sprite is used to display characters. It observes an instance of the
-# Game_Character class and automatically changes sprite state.
 #==============================================================================
 
 class Sprite_Character
@@ -562,10 +562,6 @@ end
 
 #==============================================================================
 # ** Game_Event
-#------------------------------------------------------------------------------
-#  This class handles events. Functions include event page switching via
-# condition determinants and running parallel process events. Used within the
-# Game_Map class.
 #==============================================================================
 
 class Game_Event
@@ -583,36 +579,27 @@ end
 
 #==============================================================================
 # ** KILL_CHARSET_SHIFT_Y
+#------------------------------------------------------------------------------
+#  Does as if all "Characters" had "!" in their name
 #==============================================================================
 
 if ORMS_CONFIG::KILL_CHARSET_SHIFT_Y
-
-#==============================================================================
-# ** Game_CharacterBase
-#------------------------------------------------------------------------------
-#  This base class handles characters. It retains basic information, such as 
-# coordinates and graphics, shared by all characters.
-#==============================================================================
-
 class Game_CharacterBase
-  #--------------------------------------------------------------------------
-  # * Get Number of Pixels to Shift Up from Tile Position
-  #--------------------------------------------------------------------------
   def shift_y
     return 0
   end
 end
-
 end
 
 #==============================================================================
 # ** PIXELATE_SCREEN and TOGGLE_SCREEN_INPUT
+#------------------------------------------------------------------------------
+#  PIXELATE_SCREEN: If you want fat pixels everywhere
+#  TOGGLE_SCREEN_INPUT: RM2K(3)-like F4 and F5 input (TINY WINDOW WITH F5!!!)
 #==============================================================================
 
 #==============================================================================
 # ** Scene_Title
-#------------------------------------------------------------------------------
-#  This class performs the title screen processing.
 #==============================================================================
 
 class Scene_Title
@@ -629,8 +616,6 @@ end
 
 #==============================================================================
 # ** Graphics
-#------------------------------------------------------------------------------
-#  The module that carries out graphics processing.
 #==============================================================================
 
 class << Graphics
@@ -639,28 +624,28 @@ class << Graphics
   # * Close Command Window
   #--------------------------------------------------------------------------
   def update
+    orms_graphics_update
     Toggle_Screen.check_input if ORMS_CONFIG::TOGGLE_SCREEN_INPUT
     pixelate_screen           if ORMS_CONFIG::PIXELATE_SCREEN
-    orms_graphics_update
   end
   #--------------------------------------------------------------------------
   # * Close Command Window
   #--------------------------------------------------------------------------
   def pixelate_screen
     w, h = Graphics.width / 2, Graphics.height / 2
-    if @screen.nil? || @screen.disposed?
-      @screen = Sprite.new
-      @screen.zoom_x = 2
-      @screen.zoom_y = 2
-      @screen.bitmap = Bitmap.new(w, h)
-      @screen.viewport = Viewport.new
-      @screen.viewport.z = 500
+    if @orms_screen.nil? || @orms_screen.disposed?
+      @orms_screen = Sprite.new
+      @orms_screen.zoom_x = 2
+      @orms_screen.zoom_y = 2
+      @orms_screen.bitmap = Bitmap.new(w, h)
+      @orms_screen.viewport = Viewport.new
+      @orms_screen.viewport.z = 500
     end
+    @orms_screen.visible = false
     snap = snap_to_bitmap
-    @screen.visible = false
-    @screen.bitmap.stretch_blt(Rect.new(0, 0, w, h), snap, snap.rect)
-    @screen.visible = true
+    @orms_screen.bitmap.stretch_blt(Rect.new(0, 0, w, h), snap, snap.rect)
     snap.dispose
+    @orms_screen.visible = true
   end
 end
 
@@ -678,7 +663,7 @@ module Toggle_Screen
     #--------------------------------------------------------------------------
     # * Public instance variables
     #--------------------------------------------------------------------------
-    attr_reader :toggle_size
+    attr_reader :tiny_window
     #--------------------------------------------------------------------------
     # * Win32API methods
     #--------------------------------------------------------------------------
@@ -742,8 +727,8 @@ module Toggle_Screen
     #--------------------------------------------------------------------------
     def toggle_size
       w, h = Graphics.width, Graphics.height
-      @toggle_size ? resize_window(w, h) : resize_window(w / 2, h / 2)
-      @toggle_size = !@toggle_size
+      @tiny_window ? resize_window(w, h) : resize_window(w / 2, h / 2)
+      @tiny_window = !@tiny_window
     end
     #--------------------------------------------------------------------------
     # * Toggle to fullscreen (simulate fullscreen shortcut)
@@ -759,50 +744,89 @@ module Toggle_Screen
 end
 
 #==============================================================================
-# ** Fix mouse position when the screen is switched to tiny size for RME users
-#==============================================================================
-
-begin
-
-#==============================================================================
-# ** Devices
-#------------------------------------------------------------------------------
-#  Devices collection
-#==============================================================================
-
-module Devices
-
-  #==============================================================================
-  # ** Mouse
-  #------------------------------------------------------------------------------
-  #  Concret Mouse representation
-  #==============================================================================
-
-  class Mouse
-    alias_method :orms_mouse_update_position, :update_position
-    #--------------------------------------------------------------------------
-    # * Position update
-    #--------------------------------------------------------------------------
-    def update_position
-      orms_mouse_update_position
-      if Graphics::toggle_size
-        @point.x *= 2.0
-        @point.y *= 2.0
-        update_square if SceneManager.scene.is_a?(Scene_Map)
-      end
-    end
-  end
-end
-
-rescue
-
-  # GO INSTALL RME, IT'S WAY TOO COOL!!!
-  # http://rmex.github.io/
-
-end
-
-#==============================================================================
 # ** OLD_RESOLUTION (for the slackers)
+#------------------------------------------------------------------------------
+#  Just set game resolution to 640*480
 #==============================================================================
 
 Graphics.resize_screen(640, 480) if ORMS_CONFIG::OLD_RESOLUTION
+
+#==============================================================================
+# ** DEACTIVATE_DASH
+#------------------------------------------------------------------------------
+#  No dash when you press shift
+#==============================================================================
+
+if ORMS_CONFIG::DEACTIVATE_DASH
+
+#==============================================================================
+# ** Game_Player
+#==============================================================================
+
+class Game_Player
+  #--------------------------------------------------------------------------
+  # * Determine if Dashing
+  #--------------------------------------------------------------------------
+  def dash?
+    return false
+  end
+end
+
+end
+
+#==============================================================================
+# ** RME (RMEx) compatibility
+#------------------------------------------------------------------------------
+#  Get RME: http://rmex.github.io/
+#==============================================================================
+
+begin
+  module Devices
+    class Mouse
+      alias_method :rmex_mouse_update_position, :update_position
+      def update_position
+        rmex_mouse_update_position
+        if Toggle_Screen.tiny_window
+          @point.x *= 2.0
+          @point.y *= 2.0
+          update_square if SceneManager.scene.is_a?(Scene_Map)
+        end
+      end
+    end
+  end
+rescue
+end
+
+#==============================================================================
+# ** Fullscreen++ (Zeus81) compatibility
+#------------------------------------------------------------------------------
+#  Get Fullscreen++:
+# https://forums.rpgmakerweb.com/index.php?threads/fullscreen.14081/
+#==============================================================================
+
+if ORMS_CONFIG::TOGGLE_SCREEN_INPUT
+
+begin
+  class << Graphics
+    alias_method :zeus_save_fullscreen_settings, :save_fullscreen_settings
+    def save_fullscreen_settings
+      @half = @windowed_ratio = 1 if @windowed_ratio == 0.5
+      zeus_save_fullscreen_settings
+      @windowed_ratio = 0.5 if @half == 1
+      @half = 0
+    end
+    alias_method :zeus_set_ratio, :ratio=
+    def ratio=(r)
+      r = 0.5 if ratio == 0 unless fullscreen?
+      r = 1 if r == 1.5
+      zeus_set_ratio(r)
+    end
+  end
+  module Toggle_Screen
+    def self.check_input
+    end
+  end
+rescue
+end
+
+end
