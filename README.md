@@ -1,14 +1,14 @@
 [Join us on Discord !](https://discord.gg/yRUZcdQ)
 
-# [![RMEx](http://rmex.github.io/images/rmex-shortcut.png)](http://rmex.github.io) [ORMS : Old RPG Maker Style](https://github.com/RMEx/OLD_RM_STYLE/blob/master/OLD_RM_STYLE.rb)
+# [![RMEx](http://rmex.github.io/images/rmex-shortcut.png)](http://rmex.github.io) [ORMS : Old RPG Maker Style](https://github.com/RMEx/orms/blob/master/orms.rb)
 > Make a RM2K(3)-like game with RMVXAce!
 
 ---
 
 ## INSTALLATION
 
-- Add [the script](https://raw.githubusercontent.com/RMEx/OLD_RM_STYLE/master/OLD_RM_STYLE.rb) in your project
-- Place [Font.png](https://raw.githubusercontent.com/RMEx/OLD_RM_STYLE/master/Font.png) and [Font_color.png](https://raw.githubusercontent.com/RMEx/OLD_RM_STYLE/master/Font_color.png) in the `Graphics/System/` folder
+- Add [the script](https://raw.githubusercontent.com/RMEx/orms/master/orms.rb) in your project
+- Place [Font.png](https://raw.githubusercontent.com/RMEx/orms/master/Font.png) and [Font_color.png](https://raw.githubusercontent.com/RMEx/orms/master/Font_color.png) in the `Graphics/System/` folder
 
 ---
 
