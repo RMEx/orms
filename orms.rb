@@ -691,34 +691,32 @@ module Toggle_Screen
       end
     end
     #--------------------------------------------------------------------------
-    # * Get borders_size (from the frame of the window)
+    # * Get the window rect
     #--------------------------------------------------------------------------
-    def borders_size
-      GetWindowRect.call(HWND, wrect = [0, 0, 0, 0].pack('l4'))
-      GetClientRect.call(HWND, crect = [0, 0, 0, 0].pack('l4'))
-      wrect, crect = wrect.unpack('l4'), crect.unpack('l4')
-      Rect.new(0, 0, wrect[2]-wrect[0]-crect[2], wrect[3]-wrect[1]-crect[3])
+    def window_rect
+      GetWindowRect.call(HWND, wr = [0, 0, 0, 0].pack('l4'))
+      wr = wr.unpack('l4')
+      Rect.new(wr[0], wr[1], wr[2] - wr[0], wr[3] - wr[1])
     end
     #--------------------------------------------------------------------------
-    # * Get work area rect (position and dimensions of the game window screen)
+    # * Get the dimensions of the window, excluding the frame
     #--------------------------------------------------------------------------
-    def workarea_rect
-      SystemParametersInfo.call(0x30, 0, rect = [0, 0, 0, 0].pack('l4'), 0)
-      rect = rect.unpack('l4')
-      Rect.new(rect[0], rect[1], rect[2]-rect[0], rect[3]-rect[1])
+    def client_rect
+      GetClientRect.call(HWND, cr = [0, 0, 0, 0].pack('l4'))
+      cr = cr.unpack('l4')
+      Rect.new(*cr)
     end
     #--------------------------------------------------------------------------
     # * Resize the game window (and stretch the content)
     #--------------------------------------------------------------------------
     def resize_window(w, h)
-      @borders_size  ||= borders_size
-      @workarea_rect ||= workarea_rect
-      w += @borders_size.width
-      h += @borders_size.height
-      x = @workarea_rect.x + (@workarea_rect.width  - w) / 2
-      y = @workarea_rect.y + (@workarea_rect.height - h) / 2
-      z = -2
-      SetWindowPos.call(HWND, z, x, y, w, h, 0)
+      wr = window_rect
+      cr = client_rect
+      w += wr.width  - cr.width
+      h += wr.height - cr.height
+      x = wr.x - (w - wr.width ) / 2
+      y = wr.y - (h - wr.height) / 2
+      SetWindowPos.call(HWND, 0, x, y, w, h, 0x0200)
     end
     #--------------------------------------------------------------------------
     # * Toggle the size of the game window
