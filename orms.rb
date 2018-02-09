@@ -17,8 +17,6 @@
 # - Can use RM2K(3) graphics directly (set all RESSOURCES_FEATURES to "true")
 # - Can deactivate the dash (shift)
 #
-# This script is compatible with RME (RMEx) and Fullscreen++ (Zeus81)
-#
 # In short ... configure it!
 #==============================================================================
 
@@ -772,29 +770,6 @@ class Game_Player
   end
 end
 
-end
-
-#==============================================================================
-# ** RME (RMEx) compatibility
-#------------------------------------------------------------------------------
-#  Get RME: http://rmex.github.io/
-#==============================================================================
-
-begin
-  module Devices
-    class Mouse
-      alias_method :rmex_mouse_update_position, :update_position
-      def update_position
-        rmex_mouse_update_position
-        if Toggle_Screen.tiny_window
-          @point.x *= 2.0
-          @point.y *= 2.0
-          update_square if SceneManager.scene.is_a?(Scene_Map)
-        end
-      end
-    end
-  end
-rescue
 end
 
 #==============================================================================
