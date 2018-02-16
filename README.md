@@ -132,6 +132,7 @@ And since the height is now smaller, you can also reduce the line height :
 - [ ] Change `STOP_CURSOR_BLINKING` to fancy new `OLD_RM_CURSOR_BLINKING` (use a new system picture to make oldschool blink like RM2k(3) (graphical switch blinking))
 - [ ] Add the feature `ICONS_FOR_ALL_TEXTS` to use `\I[id]` code like in dialogues, but for everything (name/description of objects, skills, etc) like RM2K(3) did with glyphs
 - [ ] Add the feature `BACKDROP_ALIGN_TOP` to use RM2K backdrops that are cut at the bottom (actually the backdrop is centered in RMVXA)
+- [ ] Add the feature `NO_MAP_SHADOWS` to deactivate the VXA shadow display in maps ingame.
 - [ ] Enlarge the scope of `PADDING` to change the main battle box padding too (to fit the previous feature)
 - [ ] Add method to deactivate/activate the features ingame... like `Orms.switch(:pixelate_screen, false)`
 - [ ] [orms-converter](https://github.com/RMEx/orms-converter)
