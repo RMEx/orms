@@ -1,4 +1,4 @@
-[Join us on Discord !](https://discord.gg/yRUZcdQ)
+[Join us on Discord!](https://discord.gg/yRUZcdQ)
 
 # [![RMEx](http://rmex.github.io/images/rmex-shortcut.png)](http://rmex.github.io) [ORMS : Old RPG Maker Style](https://github.com/RMEx/orms/blob/master/orms.rb)
 > Make a RM2K(3)-like game with RMVXAce!
@@ -109,6 +109,19 @@ And since the height is now smaller, you can also reduce the line height :
 
 ---
 
-## COMING SOON
+## COMING SOON!
 
-Why not a tiny tool to convert RM2K(3)'s Chipset to VXAce's Tilesets? :)
+**TODO LIST:**
+[ ] Verify/fix incompatibility between PIXELATE_SCREEN and some nervous scripts
+    - RME (camera commands)
+    - Luna Engine
+    - Theo's Sideview battle system
+    - MGC's mode 7
+[ ] Change STOP_CURSOR_BLINKING to fancy new OLD_RM_CURSOR_BLINKING (use a new system picture to make oldschool blink like RM2k(3) (graphical switch blinking))
+[ ] Add a feature ICONS_FOR_ALL_TEXTS to use `\I[id]` code like in dialogues, but for everything (name/description of objects, skills, etc) like RM2K(3) did with glyphs
+[ ] Add a BACKDROP_ALIGN_TOP for RM2K backdrops that are cutted in bottom (actually the backdrop is centered in RMVXA)
+[ ] Enlarge the scope of PADDING to change the main battle box padding too (to fit the previous feature)
+[ ] [orms-converter](https://github.com/RMEx/orms-converter)
+[ ] Add method to deactivate/activate the features ingame... like `Orms.switch(:pixelate_screen, false)`
+[ ] Sleep
+[ ] Any suggestion? ...Bug report? Feel free to [create an issue](https://github.com/RMEx/orms-converter/issues) or contact me [on Discord!](https://discord.gg/yRUZcdQ)
