@@ -109,6 +109,13 @@ And since the height is now smaller, you can also reduce the line height :
 
 ---
 
+## ChangeLog
+
+- `1.0.0 => 06/02/2018` First release
+- `1.0.1 => 08/02/2018` RME + Fullscreen++ compatibility
+- `1.0.3 => 09/02/2018` Change RME issue + clean `toggle_screen_input` + add wrong version number \o/
+- `1.0.4 => 16/02/2018` Fix transitions + missing update for `pixelate_screen`
+
 ## COMING SOON!
 
 **TODO LIST:**
@@ -122,7 +129,7 @@ And since the height is now smaller, you can also reduce the line height :
 - [ ] Add the feature `ICONS_FOR_ALL_TEXTS` to use `\I[id]` code like in dialogues, but for everything (name/description of objects, skills, etc) like RM2K(3) did with glyphs
 - [ ] Add the feature `BACKDROP_ALIGN_TOP` like to use RM2K backdrops that are cut at the bottom (actually the backdrop is centered in RMVXA)
 - [ ] Enlarge the scope of `PADDING` to change the main battle box padding too (to fit the previous feature)
-- [ ] [orms-converter](https://github.com/RMEx/orms-converter)
 - [ ] Add method to deactivate/activate the features ingame... like `Orms.switch(:pixelate_screen, false)`
+- [ ] [orms-converter](https://github.com/RMEx/orms-converter)
 - [ ] Sleep
 - [ ] Any suggestion? ...Bug report? Feel free to [create an issue](https://github.com/RMEx/orms-converter/issues) or contact me [on Discord!](https://discord.gg/yRUZcdQ)
