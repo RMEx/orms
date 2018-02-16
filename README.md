@@ -120,11 +120,14 @@ And since the height is now smaller, you can also reduce the line height :
 
 **TODO LIST:**
 
+- [ ] Fix `OLDSCHOOL_CHOICE_LIST` (no box when no message is displayed before the choice list)
 - [ ] Verify/fix incompatibility between `PIXELATE_SCREEN` and some nervous scripts
     - [ ] RME (camera commands)
     - [ ] Luna Engine
     - [ ] Theo's Sideview battle system
     - [ ] MGC's mode 7
+- [ ] Add the parameter `STOP_WHILE_FPS_DROP` to `PIXELATE_SCREEN` to define a FPS limit (for instance 50, while FPS < 50, pixelation will be deactivated)
+- [ ] Add the parameter `TOGGLE_SHORTCUT` to `PIXELATE_SCREEN` to add a shortcut (for instance F7) for the player to toggle pixelation ON/OFF (pop a tiny discrete message like "pixelation OFF")
 - [ ] Change `STOP_CURSOR_BLINKING` to fancy new `OLD_RM_CURSOR_BLINKING` (use a new system picture to make oldschool blink like RM2k(3) (graphical switch blinking))
 - [ ] Add the feature `ICONS_FOR_ALL_TEXTS` to use `\I[id]` code like in dialogues, but for everything (name/description of objects, skills, etc) like RM2K(3) did with glyphs
 - [ ] Add the feature `BACKDROP_ALIGN_TOP` like to use RM2K backdrops that are cut at the bottom (actually the backdrop is centered in RMVXA)
