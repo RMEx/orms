@@ -120,21 +120,21 @@ And since the height is now smaller, you can also reduce the line height :
 
 **TODO LIST:**
 
-- [ ] Fix `OLDSCHOOL_CHOICE_LIST` (no box when no message is displayed before the choice list)
-- [ ] Verify/fix compatibility between `PIXELATE_SCREEN` and some nervous scripts
+- [ ] **Fix** `OLDSCHOOL_CHOICE_LIST` (no box when no message is displayed before the choice list)
+- [ ] **Verify/fix** compatibility between `PIXELATE_SCREEN` and some nervous scripts
     - [ ] RME (camera commands)
     - [ ] Luna Engine
     - [ ] Theo's Sideview battle system
     - [ ] MGC's mode 7
-- [ ] Add the parameter `STOP_WHILE_FPS_DROP` to `PIXELATE_SCREEN` to define a FPS limit (for instance 50, while FPS < 50, pixelation will be deactivated)
-- [ ] Add the parameter `TOGGLE_SHORTCUT` to `PIXELATE_SCREEN` to add a shortcut (for instance F7) for the player to toggle pixelation ON/OFF (pop a tiny discrete message like "pixelation OFF")
-- [ ] Add the parameters `FULLSCREEN_SHORTCUT` and `CHANGE_MODE_SHORTCUT` to `TOGGLE_SCREEN_INPUT`to change the default shortcuts (F4/F5), change Fulscreen++ shortcuts as well. (And find a better name for `toogle_screen_input`)
-- [ ] Change `STOP_CURSOR_BLINKING` to fancy new `OLD_RM_CURSOR_BLINKING` (use a new system picture to make oldschool blink like RM2k(3) (graphical switch blinking))
-- [ ] Add the feature `ICONS_FOR_ALL_TEXTS` to use `\I[id]` code like in dialogues, but for everything (name/description of objects, skills, etc) like RM2K(3) did with glyphs
-- [ ] Add the feature `BACKDROP_ALIGN_TOP` to use RM2K backdrops that are cut at the bottom (actually the backdrop is centered in RMVXA)
-- [ ] Add the feature `NO_MAP_SHADOWS` to deactivate the VXA shadow display in maps ingame.
-- [ ] Enlarge the scope of `PADDING` to change the main battle box padding too (to fit the previous feature)
-- [ ] Add method to deactivate/activate the features ingame... like `Orms.switch(:pixelate_screen, false)`
+- [ ] **Add** a method to deactivate/activate the features ingame... like `Orms.switch(:pixelate_screen, false)`
+- [ ] **Add** the parameter `STOP_WHILE_FPS_DROP` to `PIXELATE_SCREEN` to define a FPS limit (for instance 50, while FPS < 50, pixelation will be deactivated)
+- [ ] **Add** the parameter `TOGGLE_SHORTCUT` to `PIXELATE_SCREEN` to add a shortcut (for instance F7) for the player to toggle pixelation ON/OFF (pop a tiny discrete message like "pixelation OFF")
+- [ ] **Add** the parameters `FULLSCREEN_SHORTCUT` and `CHANGE_MODE_SHORTCUT` to `TOGGLE_SCREEN_INPUT`to change the default shortcuts (F4/F5), change Fulscreen++ shortcuts as well. (And find a better name for `toogle_screen_input`)
+- [ ] **Change** `STOP_CURSOR_BLINKING` to fancy new `OLD_RM_CURSOR_BLINKING` (use a new system picture to make oldschool blink like RM2k(3) (graphical switch blinking))
+- [ ] **Add** the feature `ICONS_FOR_ALL_TEXTS` to use `\I[id]` code like in dialogues, but for everything (name/description of objects, skills, etc) like RM2K(3) did with glyphs
+- [ ] **Add** the feature `BACKDROP_ALIGN_TOP` to use RM2K backdrops that are cut at the bottom (actually the backdrop is centered in RMVXA)
+- [ ] **Change** the scope of `PADDING` to change the main battle box padding too (to fit the previous feature)
+- [ ] **Add** the feature `NO_MAP_SHADOWS` to deactivate the VXA shadow display in maps ingame.
 - [ ] [orms-converter](https://github.com/RMEx/orms-converter)
 - [ ] Sleep
 - [ ] Any suggestion? ...Bug report? Feel free to [create an issue](https://github.com/RMEx/orms-converter/issues) or contact me [on Discord!](https://discord.gg/yRUZcdQ)
