@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #==============================================================================
-# ** OLD_RM_STYLE  V. 1.0.3
+# ** OLD_RM_STYLE  V. 1.0.4
 #------------------------------------------------------------------------------
 # By Joke @biloumaster <joke@biloucorp.com>
 # GitHub: https://github.com/RMEx/OLD_RM_STYLE
@@ -26,43 +26,43 @@
 
 module ORMS_CONFIG
 
-# BITMAP_FONT_FEATURE:
-  BITMAP_FONT           = true  # Use the bitmap font picture to draw texts if true
-
-# BITMAP_FONT_FEATURE_OPTIONS:
-  FONT_WIDTH            = 6     # See BMP Font character's width
-  FONT_HEIGHT           = 14    # See BMP Font character's height
-  DOUBLE_FONT_SIZE      = true  # Double the BMP Font Size if true
-  LINE_HEIGHT           = 32    # Line height: VXAce: 24  2K(3): 32
-  PADDING               = 16    # Padding:     VXAce: 12  2K(3): 16
-  SHADOW                = true  # Draw text shadow using the last color in "Font_color.png"
-  REWRITE_ALL_TEXTS     = true  # Rewrite Bitmap.draw_text instead of Window_Base.draw_text
-                                #   Try this only if you have problem of compatibility
-                                #   Can create other problems... It's like blue/red pills!
-# BOX_FEATURES:
-  OPAQUE_BOX            = false # Opaque text box if true
-  STOP_CURSOR_BLINKING  = true  # Stop cursor blinking if false
-  OLDSCHOOL_CHOICE_LIST = true  # RM2K(3)-like choice list like if true
-
-# SCREEN_FEATURES:
-  TOGGLE_SCREEN_INPUT   = true  # RM2K(3)-like F4 and F5 input (TINY WINDOW WITH F5!!!)
-  PIXELATE_SCREEN       = false # If you want fat pixels everywhere
-  OLD_RESOLUTION        = false # Just set game resolution to 640*480
-
-# RESSOURCES_FEATURES:
-  USE_OLD_RM_BACKDROP   = false # Battlebacks1/2 auto-resized by two
-  USE_OLD_RM_MONSTER    = false # Battlers auto-resized by two
-  USE_OLD_RM_PANORAMA   = false # Parallaxes auto-resized by two
-  USE_OLD_RM_PICTURE    = false # Pictures auto-resized by two
-  USE_OLD_RM_TITLE      = false # Titles1/2 auto-resized by two
-  USE_OLD_RM_CHARSET    = false # Characters auto-resized by two
-  KILL_CHARSET_SHIFT_Y  = false # Does as if all "Characters" had "!" in their name
-  OLD_CHARSET_DIRECTION = false # In VXAce's ressources, directions are "DOWN, LEFT, RIGHT, UP"
-                                #   but in RM2k(3)'s ressources, it's "UP, RIGHT, DOWN, LEFT"
-                                #   this fix allows you to use directly charsets from 2k(3)!
-# DESTROY_NEW_RM_FEATURE:
-  DEACTIVATE_DASH       = false # No dash when you press shift if true
-
+  # BITMAP_FONT_FEATURE:
+    BITMAP_FONT           = true  # Use the bitmap font picture to draw texts if true
+  
+  # BITMAP_FONT_FEATURE_OPTIONS:
+    FONT_WIDTH            = 6     # See BMP Font character's width
+    FONT_HEIGHT           = 14    # See BMP Font character's height
+    DOUBLE_FONT_SIZE      = true  # Double the BMP Font Size if true
+    LINE_HEIGHT           = 32    # Line height: VXAce: 24  2K(3): 32
+    PADDING               = 16    # Padding:     VXAce: 12  2K(3): 16
+    SHADOW                = true  # Draw text shadow using the last color in "Font_color.png"
+    REWRITE_ALL_TEXTS     = true  # Rewrite Bitmap.draw_text instead of Window_Base.draw_text
+                                  #   Try this only if you have problem of compatibility
+                                  #   Can create other problems... It's like blue/red pills!
+  # BOX_FEATURES:
+    OPAQUE_BOX            = false # Opaque text box if true
+    STOP_CURSOR_BLINKING  = true  # Stop cursor blinking if false
+    OLDSCHOOL_CHOICE_LIST = true  # RM2K(3)-like choice list like if true
+  
+  # SCREEN_FEATURES:
+    TOGGLE_SCREEN_INPUT   = true  # RM2K(3)-like F4 and F5 input (TINY WINDOW WITH F5!!!)
+    PIXELATE_SCREEN       = false # If you want fat pixels everywhere
+    OLD_RESOLUTION        = false # Just set game resolution to 640*480
+  
+  # RESSOURCES_FEATURES:
+    USE_OLD_RM_BACKDROP   = false # Battlebacks1/2 auto-resized by two
+    USE_OLD_RM_MONSTER    = false # Battlers auto-resized by two
+    USE_OLD_RM_PANORAMA   = false # Parallaxes auto-resized by two
+    USE_OLD_RM_PICTURE    = false # Pictures auto-resized by two
+    USE_OLD_RM_TITLE      = false # Titles1/2 auto-resized by two
+    USE_OLD_RM_CHARSET    = false # Characters auto-resized by two
+    KILL_CHARSET_SHIFT_Y  = false # Does as if all "Characters" had "!" in their name
+    OLD_CHARSET_DIRECTION = false # In VXAce's ressources, directions are "DOWN, LEFT, RIGHT, UP"
+                                  #   but in RM2k(3)'s ressources, it's "UP, RIGHT, DOWN, LEFT"
+                                  #   this fix allows you to use directly charsets from 2k(3)!
+  # DESTROY_NEW_RM_FEATURE:
+    DEACTIVATE_DASH       = false # No dash when you press shift if true
+  
 end
 
 #==============================================================================
@@ -596,38 +596,37 @@ end
 #  TOGGLE_SCREEN_INPUT: RM2K(3)-like F4 and F5 input (TINY WINDOW WITH F5!!!)
 #==============================================================================
 
-#==============================================================================
-# ** Scene_Title
-#==============================================================================
+if ORMS_CONFIG::PIXELATE_SCREEN
 
-class Scene_Title
+#==============================================================================
+# ** Avoid missing graphical update after window close processing
+#  Not notable without screen pixelation
+#==============================================================================
+class Window_Base
+  alias_method :orms_update_close, :update_close
   #--------------------------------------------------------------------------
-  # * Close Command Window
-  #     an "update" was missing, oooooh...
+  # * Update Close Processing
   #--------------------------------------------------------------------------
-  def close_command_window
-    @command_window.close
-    update until @command_window.close?
-    update
+  def update_close
+    orms_update_close
+    Graphics.update if close?
   end
 end
-
 #==============================================================================
 # ** Graphics
 #==============================================================================
 
 class << Graphics
+  #--------------------------------------------------------------------------
+  # * Update the screen display
+  #--------------------------------------------------------------------------
   alias_method :orms_graphics_update, :update
-  #--------------------------------------------------------------------------
-  # * Close Command Window
-  #--------------------------------------------------------------------------
   def update
+    pixelate_screen
     orms_graphics_update
-    Toggle_Screen.check_input if ORMS_CONFIG::TOGGLE_SCREEN_INPUT
-    pixelate_screen           if ORMS_CONFIG::PIXELATE_SCREEN
   end
   #--------------------------------------------------------------------------
-  # * Close Command Window
+  # * Pixelate the screen
   #--------------------------------------------------------------------------
   def pixelate_screen
     w, h = Graphics.width / 2, Graphics.height / 2
@@ -644,6 +643,38 @@ class << Graphics
     @orms_screen.bitmap.stretch_blt(Rect.new(0, 0, w, h), snap, snap.rect)
     snap.dispose
     @orms_screen.visible = true
+  end
+  #--------------------------------------------------------------------------
+  # * Make a transition
+  #--------------------------------------------------------------------------
+  alias_method :orms_transition, :transition
+  def transition(*args)
+    pixelate_screen
+    orms_transition(*args)
+  end
+end
+
+end
+
+#==============================================================================
+# ** TOGGLE_SCREEN_INPUT
+#------------------------------------------------------------------------------
+#  RM2K(3)-like F4 and F5 input (TINY WINDOW WITH F5!!!)
+#==============================================================================
+
+if ORMS_CONFIG::TOGGLE_SCREEN_INPUT
+
+#==============================================================================
+# ** Input
+#==============================================================================
+
+module Input
+  class << self
+    alias_method :orms_input_update, :update
+    def update
+      orms_input_update
+      Toggle_Screen.check_input
+    end
   end
 end
 
@@ -737,6 +768,8 @@ module Toggle_Screen
       @toggle_fullscreen = !@toggle_fullscreen
     end
   end
+end
+
 end
 
 #==============================================================================
