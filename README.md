@@ -118,7 +118,7 @@ And since the height is now smaller, you can also reduce the line height :
     - [ ] Luna Engine
     - [ ] Theo's Sideview battle system
     - [ ] MGC's mode 7
-- [ ] Change STOP_CURSOR_BLINKING to fancy new `OLD_RM_CURSOR_BLINKING` (use a new system picture to make oldschool blink like RM2k(3) (graphical switch blinking))
+- [ ] Change `STOP_CURSOR_BLINKING` to fancy new `OLD_RM_CURSOR_BLINKING` (use a new system picture to make oldschool blink like RM2k(3) (graphical switch blinking))
 - [ ] Add the feature `ICONS_FOR_ALL_TEXTS` to use `\I[id]` code like in dialogues, but for everything (name/description of objects, skills, etc) like RM2K(3) did with glyphs
 - [ ] Add the feature `BACKDROP_ALIGN_TOP` like to use RM2K backdrops that are cut at the bottom (actually the backdrop is centered in RMVXA)
 - [ ] Enlarge the scope of `PADDING` to change the main battle box padding too (to fit the previous feature)
