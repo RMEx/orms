@@ -121,13 +121,14 @@ And since the height is now smaller, you can also reduce the line height :
 **TODO LIST:**
 
 - [ ] **Fix** `OLDSCHOOL_CHOICE_LIST` (no box when no message is displayed before the choice list)
-- [ ] **Verify/fix** compatibility between `PIXELATE_SCREEN` and some nervous scripts
+- [x] **Verify/fix** compatibility between `PIXELATE_SCREEN` and some nervous scripts
     - [ ] RME (camera commands)
-    - [ ] Luna Engine
+    - [x] Luna Engine
     - [ ] Theo's Sideview battle system
     - [ ] MGC's mode 7
-- [ ] **Add** a method to deactivate/activate the features ingame... like `Orms.switch(:pixelate_screen, false)`
-- [ ] **Add** the parameter `STOP_WHILE_FPS_DROP` to `PIXELATE_SCREEN` to define a FPS limit (for instance 50, while FPS < 50, pixelation will be deactivated)
+- [ ] **Add** methods to set a `start_transition` and a `end_transition` in events for teleports and... reproduce all RM(2)K3 start/end transitions? :D
+- [ ] **Add** methods to deactivate/activate the features ingame... like `Orms.switch(:pixelate_screen, false)`
+- [ ] **Implement** dynamic frame skipping for `PIXELATE_SCREEN`
 - [ ] **Add** the parameter `TOGGLE_SHORTCUT` to `PIXELATE_SCREEN` to add a shortcut (for instance F7) for the player to toggle pixelation ON/OFF (pop a tiny discrete message like "pixelation OFF")
 - [ ] **Add** the parameters `FULLSCREEN_SHORTCUT` and `CHANGE_MODE_SHORTCUT` to `TOGGLE_SCREEN_INPUT`to change the default shortcuts (F4/F5), change Fulscreen++ shortcuts as well. (And find a better name for `toogle_screen_input`)
 - [ ] **Change** `STOP_CURSOR_BLINKING` to fancy new `OLD_RM_CURSOR_BLINKING` (use a new system picture to make oldschool blink like RM2k(3) (graphical switch blinking))
