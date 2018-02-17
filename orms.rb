@@ -24,7 +24,9 @@
 # ** CONFIGURATION
 #==============================================================================
 
-module ORMS_CONFIG
+unless Module.const_defined?(:ORMS_CONFIG)
+
+module ORMS_CONFIG  
 
   # BITMAP_FONT_FEATURE:
     BITMAP_FONT           = true  # Use the bitmap font picture to draw texts if true
@@ -56,6 +58,7 @@ module ORMS_CONFIG
     USE_OLD_RM_PICTURE    = false # Pictures auto-resized by two
     USE_OLD_RM_TITLE      = false # Titles1/2 auto-resized by two
     USE_OLD_RM_CHARSET    = false # Characters auto-resized by two
+    BACKDROP_ALIGN_TOP    = false # Align Battlebacks to top instead of center (for RM2K backdrops)
     KILL_CHARSET_SHIFT_Y  = false # Does as if all "Characters" had "!" in their name
     OLD_CHARSET_DIRECTION = false # In VXAce's ressources, directions are "DOWN, LEFT, RIGHT, UP"
                                   #   but in RM2k(3)'s ressources, it's "UP, RIGHT, DOWN, LEFT"
@@ -63,6 +66,8 @@ module ORMS_CONFIG
   # DESTROY_NEW_RM_FEATURE:
     DEACTIVATE_DASH       = false # No dash when you press shift if true
   
+end
+
 end
 
 #==============================================================================
@@ -172,10 +177,43 @@ module Cache
         bmp = Bitmap.new(path)
         @cache[path] = Bitmap.new(bmp.width*2, bmp.height*2)
         @cache[path].stretch_blt(@cache[path].rect, bmp, bmp.rect)
+        bmp.dispose
       end
       @cache[path]
     end
+    #--------------------------------------------------------------------------
+    # * Create/Get Hue-Changed Bitmap resized by two
+    #--------------------------------------------------------------------------
+    def self.hue_changed_bitmap(path, hue)
+      key = [path, hue]
+      unless include?(key)
+        bmp = Bitmap.new(path)
+        bmp.hue_change(hue)
+        @cache[key] = Bitmap.new(bmp.width*2, bmp.height*2)
+        @cache[key].stretch_blt(@cache[key].rect, bmp, bmp.rect)
+        bmp.dispose
+      end
+      @cache[key]
+    end
   end
+end
+
+if ORMS_CONFIG::BACKDROP_ALIGN_TOP
+
+#==============================================================================
+# ** Spriteset_Battle
+#==============================================================================
+
+class Spriteset_Battle
+  #--------------------------------------------------------------------------
+  # * Move Sprite to Screen Center
+  #--------------------------------------------------------------------------
+  def center_sprite(sprite)
+    sprite.ox = sprite.bitmap.width / 2
+    sprite.x = Graphics.width / 2
+  end
+end
+
 end
 
 #==============================================================================
@@ -341,6 +379,26 @@ class Window_Message
     return ORMS_CONFIG::PADDING
   end
 end
+class Window_ActorCommand
+  def standard_padding
+    return ORMS_CONFIG::PADDING
+  end
+end
+class Window_BattleStatus
+  def standard_padding
+    return ORMS_CONFIG::PADDING
+  end
+end
+class Window_BattleEnemy
+  def standard_padding
+    return ORMS_CONFIG::PADDING
+  end
+end
+class Window_PartyCommand
+  def standard_padding
+    return ORMS_CONFIG::PADDING
+  end
+end
 
 #==============================================================================
 # ** Window_MenuStatus
@@ -461,7 +519,7 @@ class Window_Base
   #--------------------------------------------------------------------------
   # * Public instance variables
   #--------------------------------------------------------------------------
-  attr_reader :line_number
+  attr_accessor :line_number
   #--------------------------------------------------------------------------
   # * Object Initialization
   #--------------------------------------------------------------------------
@@ -469,14 +527,6 @@ class Window_Base
   def initialize(*args)
     orms_choice_initialize(*args)
     @line_number = 0
-  end
-  #--------------------------------------------------------------------------
-  # * New Line Character Processing
-  #--------------------------------------------------------------------------
-  alias_method :orms_choice_process_new_line, :process_new_line
-  def process_new_line(text, pos)
-    orms_choice_process_new_line(text, pos)
-    @line_number += 1
   end
 end
 
@@ -491,7 +541,7 @@ class Window_Message
   alias_method :orms_choice_new_page, :new_page
   def new_page(text, pos)
     orms_choice_new_page(text, pos)
-    @line_number = 0
+    @line_number = text.split("\n").length
   end
 end
 
@@ -510,13 +560,26 @@ class Window_ChoiceList
     self.windowskin.fill_rect(Rect.new(0,0,168,64), Color.new(0,0,0,0))
   end
   #--------------------------------------------------------------------------
-  # * Update Window Position
+  # * Start Input Processing
   #--------------------------------------------------------------------------
-  def update_placement
-    if (@message_window.line_number + $game_message.choices.size > 4)
+  alias_method :orms_start, :start
+  def start
+    if @message_window.openness == 0
+      @message_window.create_contents
+      @message_window.line_number = 0
+      @message_window.open
+    end
+    if (@message_window.line_number + $game_message.choices.size >
+        @message_window.visible_line_number)
       @message_window.input_pause
       @message_window.new_page("", {x:0, y:0, new_x:0, height:0})
     end
+    orms_start
+  end
+  #--------------------------------------------------------------------------
+  # * Update Window Position
+  #--------------------------------------------------------------------------
+  def update_placement
     self.x = @message_window.new_line_x + 6
     self.y = @message_window.y + @message_window.line_number * @message_window.line_height
     self.width = @message_window.width - self.x - 10
@@ -609,7 +672,7 @@ class Window_Base
   #--------------------------------------------------------------------------
   def update_close
     orms_update_close
-    Graphics.update if close?
+    Graphics.pixelate_screen if close?
   end
 end
 #==============================================================================
@@ -622,7 +685,10 @@ class << Graphics
   #--------------------------------------------------------------------------
   alias_method :orms_graphics_update, :update
   def update
-    pixelate_screen
+    @skip ||= 0
+    @skip %= 2
+    pixelate_screen if @skip == 0
+    @skip += 1
     orms_graphics_update
   end
   #--------------------------------------------------------------------------
