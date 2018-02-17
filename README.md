@@ -127,7 +127,7 @@ And since the height is now smaller, you can also reduce the line height :
     - [ ] Theo's Sideview battle system
     - [ ] MGC's mode 7
 - [ ] **Add** methods to set a `start_transition` and a `end_transition` in events for teleports and... reproduce all RM(2)K3 start/end transitions? :D
-- [ ] **Add** methods to deactivate/activate the features ingame... like `Orms.switch(:pixelate_screen, false)`
+- [x] **Add** methods to deactivate/activate the features ingame... like `Orms.switch(:pixelate_screen, false)`
 - [ ] **Implement** dynamic frame skipping for `PIXELATE_SCREEN`
 - [ ] **Add** the parameter `TOGGLE_SHORTCUT` to `PIXELATE_SCREEN` to add a shortcut (for instance F7) for the player to toggle pixelation ON/OFF (pop a tiny discrete message like "pixelation OFF")
 - [ ] **Add** the parameters `FULLSCREEN_SHORTCUT` and `CHANGE_MODE_SHORTCUT` to `TOGGLE_SCREEN_INPUT`to change the default shortcuts (F4/F5), change Fulscreen++ shortcuts as well. (And find a better name for `toogle_screen_input`)

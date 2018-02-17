@@ -15,9 +15,18 @@
 # - Can pixelate the screen display (for the care of the detail)
 # - Can set the resolution to 640*480 (okay, it's just one line BUT YES IT CAN)
 # - Can use RM2K(3) graphics directly (set all RESSOURCES_FEATURES to "true")
+# - Can align the battlebacks to top (for RM2K backdrops)
 # - Can deactivate the dash (shift)
 #
 # In short ... configure it!
+#
+#------------------------------------------------------------------------------
+# ** Additional methods:
+#------------------------------------------------------------------------------
+# - Orms.set(feature, state)  # Change the features ingame
+#                               (example: Orms.set(:bitmap_font, false))
+# - Orms.deactivate           # Deactivate all the features
+# - Orms.activate             # Activate all the features (active by default)
 #==============================================================================
 
 #==============================================================================
@@ -68,6 +77,36 @@ module ORMS_CONFIG
   
 end
 
+end
+
+module Orms
+  extend self
+  def set(feature, state)
+    feature = feature.to_s.upcase.to_sym
+    ORMS_CONFIG.const_set(feature, state)
+    unless Graphics.orms_screen.nil? || Graphics.orms_screen.disposed?
+      Graphics.orms_screen.dispose if [feature, state] == [:PIXELATE_SCREEN, false]
+    end
+    if SceneManager.scene.is_a?(Scene_Map) || SceneManager.scene.is_a?(Scene_Battle)
+      SceneManager.scene.create_all_windows
+    end
+  end
+  def deactivate
+    @active = false
+    unless Graphics.orms_screen.nil? || Graphics.orms_screen.disposed?
+      Graphics.orms_screen.dispose
+    end
+    if SceneManager.scene.is_a?(Scene_Map) || SceneManager.scene.is_a?(Scene_Battle)
+      SceneManager.scene.create_all_windows
+    end
+  end
+  def activate
+    @active = true
+  end
+  def active?
+    @active = true if @active.nil?
+    @active
+  end
 end
 
 #==============================================================================
@@ -160,13 +199,14 @@ module Cache
     # * Load Bitmap to be resized by two
     #--------------------------------------------------------------------------
     def load_2k_bitmap(folder_name, filename, hue = 0)
+      return load_bitmap(folder_name, filename, hue) unless Orms.active?
       @cache ||= {}
       if filename.empty?
         empty_bitmap
       elsif hue == 0
         normal_2k_bitmap(folder_name + filename)
       else
-        hue_changed_bitmap(folder_name + filename, hue)
+        hue_changed_2k_bitmap(folder_name + filename, hue)
       end
     end
     #--------------------------------------------------------------------------
@@ -184,7 +224,7 @@ module Cache
     #--------------------------------------------------------------------------
     # * Create/Get Hue-Changed Bitmap resized by two
     #--------------------------------------------------------------------------
-    def self.hue_changed_bitmap(path, hue)
+    def hue_changed_2k_bitmap(path, hue)
       key = [path, hue]
       unless include?(key)
         bmp = Bitmap.new(path)
@@ -246,6 +286,7 @@ module ORMS_Bitmap_Font
         # * Get Text Size
         #--------------------------------------------------------------------------
         def text_size(str)
+          return orms_text_size(str) unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
           s = ORMS_CONFIG::DOUBLE_FONT_SIZE ? 2 : 1
           w = ORMS_CONFIG::FONT_WIDTH
           h = ORMS_CONFIG::FONT_HEIGHT
@@ -256,6 +297,7 @@ module ORMS_Bitmap_Font
         # * Draw Text
         #--------------------------------------------------------------------------
         def draw_text(*args)
+          return orms_draw_text(*args) unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
           if args.length.between?(2,4)
             x, y, width, text = args[0].x, args[0].y, args[0].width, args[1].to_s.clone
             align    = args[2] || 0
@@ -311,7 +353,9 @@ class Window_Base
   #--------------------------------------------------------------------------
   # * Draw Text
   #--------------------------------------------------------------------------
+  alias_method :orms_draw_text, :draw_text
   def draw_text(*args)
+    return orms_draw_text(*args) unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
     args.push(0) if args.length == 2 || args.length == 5
     args.push(@color_id)
     contents.draw_text(*args)
@@ -329,24 +373,38 @@ class Window_Base
   #--------------------------------------------------------------------------
   # * Change Text Drawing Color
   #--------------------------------------------------------------------------
+  alias_method :orms_change_color, :change_color
   def change_color(color, enabled = true)
+    unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+      return orms_change_color(color, enabled)
+    end
     contents.font.color.set(enabled ? color : text_color(3))
   end
   #--------------------------------------------------------------------------
   # * Calculate Line Height
   #--------------------------------------------------------------------------
+  alias_method :orms_calc_line_height, :calc_line_height
   def calc_line_height(text, restore_font_size = true)
+    unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+      return orms_calc_line_height(text, restore_font_size)
+    end
     return line_height
   end
   #--------------------------------------------------------------------------
   # * Get Line Height
   #--------------------------------------------------------------------------
+  alias_method :orms_line_height, :line_height
   def line_height
+    return orms_line_height unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
     return ORMS_CONFIG::LINE_HEIGHT
   end
 end
 
 if ORMS_CONFIG::REWRITE_ALL_TEXTS
+  class Bitmap
+    alias_method :orms_draw_text, :draw_text
+    alias_method :orms_text_size, :text_size
+  end
   Bitmap.send(:include, ORMS_Bitmap_Font)
 else
   Window_Base.send(:include, ORMS_Bitmap_Font)
@@ -362,40 +420,53 @@ class Window_Message
   #--------------------------------------------------------------------------
   alias_method :orms_draw_face, :draw_face
   def draw_face(*args)
+    return orms_draw_face(*args) unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
     args[2] = args[3] = (contents_height - 96) / 2
     orms_draw_face(*args)
   end
   #--------------------------------------------------------------------------
   # * Get New Line Position
   #--------------------------------------------------------------------------
+  alias_method :orms_new_line_x, :new_line_x
   def new_line_x
+    return orms_new_line_x unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
     x = [96, height - standard_padding].max
     $game_message.face_name.empty? ? 0 : x
   end
   #--------------------------------------------------------------------------
   # * Get Standard Padding Size
   #--------------------------------------------------------------------------
+  alias_method :orms_standard_padding, :standard_padding
   def standard_padding
+    return orms_standard_padding unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
     return ORMS_CONFIG::PADDING
   end
 end
 class Window_ActorCommand
+  alias_method :orms_standard_padding, :standard_padding
   def standard_padding
+    return orms_standard_padding unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
     return ORMS_CONFIG::PADDING
   end
 end
 class Window_BattleStatus
+  alias_method :orms_standard_padding, :standard_padding
   def standard_padding
+    return orms_standard_padding unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
     return ORMS_CONFIG::PADDING
   end
 end
 class Window_BattleEnemy
+  alias_method :orms_standard_padding, :standard_padding
   def standard_padding
+    return orms_standard_padding unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
     return ORMS_CONFIG::PADDING
   end
 end
 class Window_PartyCommand
+  alias_method :orms_standard_padding, :standard_padding
   def standard_padding
+    return orms_standard_padding unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
     return ORMS_CONFIG::PADDING
   end
 end
@@ -408,7 +479,9 @@ class Window_MenuStatus
   #--------------------------------------------------------------------------
   # * Draw Item
   #--------------------------------------------------------------------------
+  alias_method :orms_draw_item, :draw_item
   def draw_item(index)
+    return orms_draw_item(index) unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
     actor = $game_party.members[index]
     enabled = $game_party.battle_members.include?(actor)
     rect = item_rect(index)
@@ -426,7 +499,9 @@ class Window_TitleCommand
   #--------------------------------------------------------------------------
   # * Get Window Width
   #--------------------------------------------------------------------------
+  alias_method :orms_window_width, :window_width
   def window_width
+    return orms_window_width unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
     s = ORMS_CONFIG::DOUBLE_FONT_SIZE ? 2 : 1
     max = @list.map {|i| i[:name].length * ORMS_CONFIG::FONT_WIDTH * s}.max
     max + 2 * standard_padding + 8
@@ -461,7 +536,7 @@ class Window_Base
   alias_method :orms_opaque_initialize, :initialize
   def initialize(*args)
     orms_opaque_initialize(*args)
-    self.back_opacity = 255
+    self.back_opacity = 255 if Orms.active? && ORMS_CONFIG::OPAQUE_BOX
   end
 end
 
@@ -483,11 +558,14 @@ class Window
   #--------------------------------------------------------------------------
   # * The cursor's blink status
   #--------------------------------------------------------------------------
+  alias_method :orms_active, :active
   def active
+    return orms_active unless Orms.active? && ORMS_CONFIG::STOP_CURSOR_BLINKING
     @active
   end
   alias_method :orms_blink_active, :active=
   def active=(index)
+    return orms_blink_active(index) unless Orms.active? && ORMS_CONFIG::STOP_CURSOR_BLINKING
     orms_blink_active(false)
     @active = index
   end
@@ -496,7 +574,7 @@ class Window
   #--------------------------------------------------------------------------
   alias_method :orms_blink_cursor_rect, :cursor_rect
   def cursor_rect
-    orms_blink_active(false)
+    orms_blink_active(false) if Orms.active? && ORMS_CONFIG::STOP_CURSOR_BLINKING
     orms_blink_cursor_rect
   end
 end
@@ -556,30 +634,36 @@ class Window_ChoiceList
   alias_method :oldschool_choice_initialize, :initialize
   def initialize(message_window)
     oldschool_choice_initialize(message_window)
-    self.windowskin = Cache.system("Window").clone
-    self.windowskin.fill_rect(Rect.new(0,0,168,64), Color.new(0,0,0,0))
+    if Orms.active? && ORMS_CONFIG::OLDSCHOOL_CHOICE_LIST
+      self.windowskin = Cache.system("Window").clone
+      self.windowskin.fill_rect(Rect.new(0,0,168,64), Color.new(0,0,0,0))
+    end
   end
   #--------------------------------------------------------------------------
   # * Start Input Processing
   #--------------------------------------------------------------------------
   alias_method :orms_start, :start
   def start
-    if @message_window.openness == 0
-      @message_window.create_contents
-      @message_window.line_number = 0
-      @message_window.open
-    end
-    if (@message_window.line_number + $game_message.choices.size >
-        @message_window.visible_line_number)
-      @message_window.input_pause
-      @message_window.new_page("", {x:0, y:0, new_x:0, height:0})
+    if Orms.active? && ORMS_CONFIG::OLDSCHOOL_CHOICE_LIST
+      if @message_window.openness == 0
+        @message_window.create_contents
+        @message_window.line_number = 0
+        @message_window.open
+      end
+      if (@message_window.line_number + $game_message.choices.size >
+          @message_window.visible_line_number)
+        @message_window.input_pause
+        @message_window.new_page("", {x:0, y:0, new_x:0, height:0})
+      end
     end
     orms_start
   end
   #--------------------------------------------------------------------------
   # * Update Window Position
   #--------------------------------------------------------------------------
+  alias_method :orms_update_placement, :update_placement
   def update_placement
+    orms_update_placement unless Orms.active? && ORMS_CONFIG::OLDSCHOOL_CHOICE_LIST
     self.x = @message_window.new_line_x + 6
     self.y = @message_window.y + @message_window.line_number * @message_window.line_height
     self.width = @message_window.width - self.x - 10
@@ -609,7 +693,9 @@ class Sprite_Character
   #--------------------------------------------------------------------------
   # * Update Transfer Origin Rectangle
   #--------------------------------------------------------------------------
+  alias_method :orms_update_src_rect, :update_src_rect
   def update_src_rect
+    return orms_update_src_rect unless Orms.active? && ORMS_CONFIG::OLD_CHARSET_DIRECTION
     if @tile_id == 0
       direction = [2, 3, 1, 0][@character.direction / 2 - 1]
       index = @character.character_index
@@ -626,13 +712,15 @@ end
 #==============================================================================
 
 class Game_Event
-  alias_method :orms_setup_page_setting, :setup_page_settings
   #--------------------------------------------------------------------------
   # * Set Up Event Page Settings
   #--------------------------------------------------------------------------
+  alias_method :orms_setup_page_setting, :setup_page_settings
   def setup_page_settings
     orms_setup_page_setting
-    @original_direction = @direction = [8, 6, 2, 4][@page.graphic.direction / 2 - 1]
+    if Orms.active? && ORMS_CONFIG::OLD_CHARSET_DIRECTION
+      @original_direction = @direction = [8, 6, 2, 4][@page.graphic.direction / 2 - 1]
+    end
   end
 end
 
@@ -646,7 +734,9 @@ end
 
 if ORMS_CONFIG::KILL_CHARSET_SHIFT_Y
 class Game_CharacterBase
+  alias_method :orms_shift_y, :shift_y
   def shift_y
+    return orms_shift_y unless Orms.active? && ORMS_CONFIG::KILL_CHARSET_SHIFT_Y
     return 0
   end
 end
@@ -666,10 +756,10 @@ if ORMS_CONFIG::PIXELATE_SCREEN
 #  Not notable without screen pixelation
 #==============================================================================
 class Window_Base
-  alias_method :orms_update_close, :update_close
   #--------------------------------------------------------------------------
   # * Update Close Processing
   #--------------------------------------------------------------------------
+  alias_method :orms_update_close, :update_close
   def update_close
     orms_update_close
     Graphics.pixelate_screen if close?
@@ -680,6 +770,10 @@ end
 #==============================================================================
 
 class << Graphics
+  #--------------------------------------------------------------------------
+  # * Public instance variables
+  #--------------------------------------------------------------------------
+  attr_accessor :orms_screen
   #--------------------------------------------------------------------------
   # * Update the screen display
   #--------------------------------------------------------------------------
@@ -695,6 +789,7 @@ class << Graphics
   # * Pixelate the screen
   #--------------------------------------------------------------------------
   def pixelate_screen
+    return unless Orms.active? && ORMS_CONFIG::PIXELATE_SCREEN
     w, h = Graphics.width / 2, Graphics.height / 2
     if @orms_screen.nil? || @orms_screen.disposed?
       @orms_screen = Sprite.new
@@ -862,7 +957,9 @@ class Game_Player
   #--------------------------------------------------------------------------
   # * Determine if Dashing
   #--------------------------------------------------------------------------
+  alias_method :orms_dash?, :dash?
   def dash?
+    return orms_dash? unless Orms.active? && ORMS_CONFIG::DEACTIVATE_DASH
     return false
   end
 end
