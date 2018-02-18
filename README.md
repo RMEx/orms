@@ -1,58 +1,136 @@
 [Join us on Discord!](https://discord.gg/yRUZcdQ)
 
-# [![RMEx](http://rmex.github.io/images/rmex-shortcut.png)](http://rmex.github.io) [ORMS : Old RPG Maker Style](https://github.com/RMEx/orms/blob/master/orms.rb)
+# [![RMEx](http://rmex.github.io/images/rmex-shortcut.png)](http://rmex.github.io) [ORMS : Old RPG Maker Style](https://github.com/RMEx/orms/blob/master/orms.rb) v1.1.0
 > Make a RM2K(3)-like game with RMVXAce!
 
----
+***
 
-## INSTALLATION
+# ChangeLog
+
+> - `v1.0.0 => 06/02/2018` First release
+> - `v1.0.1 => 08/02/2018` RME + Fullscreen++ compatibility
+> - `v1.0.3 => 09/02/2018` Change RME issue + clean `TOGGLE_SCREEN_INPUT` + add wrong version number \o/
+> - `v1.0.4 => 16/02/2018` Fix transitions + missing update for `PIXELATE_SCREEN`
+ - `v1.1.0 => 18/02/2018`**[Current]**
+    - Fix `USE_OLD_RM_...` (did not double the size when the HUE was changed)
+    - Fix `OLDSCHOOL_CHOICE_LIST` (the box wasn't displayed when there were no message displayed before)
+    - Add `Orms.set(feature, state)`, `Orms.activate` and `Orms.deactivate` ingame methods for users
+    - Change `TOGGLE_SCREEN_INPUT` to new `TOGGLE_FULLSCREEN` and `TOGGLE_WINDOW_MODE` features that allow to specify which shortcut you want to set
+    - The shortcuts defined above now change also the `Fullscreen++` shortcuts
+    - Implement dynamic frame skipping for the `PIXELATE_SCREEN` feature!
+    - Implement additional FPS displayer which takes into account the dynamic frame skipping! Display it with `F2`!
+    - Add `PIXELATION_SHORTCUT` to set a shortcut that activate/deactivate the screen pixelation ingame!
+
+***
+
+# Installation
 
 - Add [the script](https://raw.githubusercontent.com/RMEx/orms/master/orms.rb) in your project
 - Place [Font.png](https://raw.githubusercontent.com/RMEx/orms/master/Font.png) and [Font_color.png](https://raw.githubusercontent.com/RMEx/orms/master/Font_color.png) in the `Graphics/System/` folder
 
 ---
 
-## CONFIGURATION
+# Configuration
 
 OLD_RM_STYLE is really versatile, see the first module **ORMS_CONFIG** to configure it.
 
 ---
 
-## FEATURES
+# Features
 
-- Can use **"Graphics/System/Font.png"** and **"Graphics/System/Font_color.png"** to write awesome OldSchool texts
-- Can make the window box opaque (like RM2K) and/or stop the cursor blinking
-- Can display the choice list inside the dialogue like RM2K(3)
-- Can set shortcuts **F4**: toggle fullscreen, **F5**: toggle AWESOME TINY WINDOW MODE
+All the features are **optional**, just activate the features you want in **ORMS_CONFIG** and enjoy!
 
-Example of tiny windows mode:
+## BITMAP_FONT
 
-![Screenshot](https://cdn.discordapp.com/attachments/166299388799483904/409985784473583616/unknown.png)
+Use the bitmaps **Font** and **Font_color** to draw texts
 
-- Can pixelate the screen display (for the care of the detail)
-- Can set the resolution to 640*480 (okay, it's just one line BUT YES IT CAN)
-- Can use RM2K(3) graphics directly (set all RESSOURCES_FEATURES to "true")
-- Can deactivate the dash (shift)
+Image name | Example
+--- | ---
+Font.png | ![Font.png](Font.png)
+Font_color.png | ![Font_color.png](Font_color.png)
 
-All texts will be rendered using the two pictures below if `ORMS_CONFIG::BMP_FONT` is `true`:
+## BITMAP_FONT OPTIONS:
+Option | Description | Default value
+--- | --- | ---
+**FONT_WIDTH<br>FONT HEIGHT** | The character size of your font bitmap | 6 x 14
+**DOUBLE_FONT_SIZE** | Double the size of the bitmap font/text | true
+**LINE_HEIGHT** | Change the line height | 32
+**PADDING** | Change the padding of the message and battle windows | 16
+**SHADOW** | Draw text shadow using the last color in "Font_color.png" | true
+**REWRITE_ALL_TEXTS** | Rewrite Bitmap.draw_text instead of Window_Base.draw_text | true
 
-![Font.png](Font.png)
-![Font_color.png](Font_color.png)
+## BOX_FEATURES:
+Feature | Description | Default value
+--- | --- | ---
+**OPAQUE_BOX** | Opaque text box if true | false
+**STOP_CURSOR_BLINKING** | Stop cursor blinking if true | true
+**OLDSCHOOL_CHOICE_LIST** | RM2K(3)-like choice list like if true | true
+
+## SCREEN_FEATURES:
+Feature | Description | Default value
+--- | --- | ---
+**OLD_RESOLUTION** | Just set game resolution to 640*480 (to simulate RM2k(3)'s 320*240) | false
+**TOGGLE_FULLSCREEN** | The shortcut (:F3..:F11) to toggle the fullscreen mode like RM2k(3).<br><br>Set the shortcut to 0 if you want none. | :F4
+**TOGGLE_WINDOW_MODE** | The shortcut (:F3..:F11) to toggle to TINY 1x WINDOW MODE like RM2k(3).<br><br>Set the shortcut to 0 if you want none. | :F5
+**PIXELATE_SCREEN** | If you want fat pixels everywhere!<br><br>This feature is a bit greedy, but it tries to optimize itself with a custom frame skipping method.<br><br>This feature activate a custom FPS display (F2) that shows the real FPS, counting the frame skipping. | false
+**PIXELATION_SHORTCUT** | The shortcut (:F3..:F11) to activate/deactivate pixelation ingame.<br><br>Set the shortcut to 0 if you want none.<br><br>Don't forget to tell the player he can use this shortcut! An alternative is to use the `Orms.set(:pixelate_screen, false)` method. | :F6
+
+### NOTE:
+**TOGGLE_FULLSCREEN** and **TOGGLE_WINDOW_MODE** re-define also the Fullscreen++ shortcuts if you use it too. If you use Fullscreen++, place Fullscreen++ right before orms!
+
+[Get Fullscreen++](https://forums.rpgmakerweb.com/index.php?threads/fullscreen.14081/)
+
+## RESSOURCES_FEATURES:
+Use these features if you want to directly use RM2k(3) ressources!
+
+Feature | Description | Default value
+--- | --- | ---
+**USE_OLD_RM_BACKDROP** | Battlebacks1/2 auto-resized by two | false
+**USE_OLD_RM_MONSTER** | Battlers auto-resized by two | false
+**USE_OLD_RM_PANORAMA** | Parallaxes auto-resized by two | false
+**USE_OLD_RM_PICTURE** | Pictures auto-resized by two | false
+**USE_OLD_RM_TITLE** | Titles1/2 auto-resized by two | false
+**USE_OLD_RM_CHARSET** | Characters auto-resized by two | false
+**BACKDROP_ALIGN_TOP** | Align Battlebacks to top instead of center (for RM2K backdrops) | false
+**KILL_CHARSET_SHIFT_Y** | Does as if all "Characters" had "!" in their name | false
+**OLD_CHARSET_DIRECTION** | In VXAce's ressources, directions are "DOWN, LEFT, RIGHT, UP" but in RM2k(3)'s ressources, it's "UP, RIGHT, DOWN, LEFT"<br><br>this fix allows you to use directly charsets from 2k(3)! | false
+
+## DESTROY_NEW_RM_FEATURE:
+Feature | Description | Default value
+--- | --- | ---
+**DEACTIVATE_DASH** | No dash when you press shift if true | false
+
 
 ---
 
-## EXAMPLES
+# Examples
 
 ![Screenshot](https://cdn.discordapp.com/attachments/410124292244766741/410207355993849867/unknown.png)
 ![Screenshot](https://cdn.discordapp.com/attachments/410124292244766741/410206525961797644/unknown.png)
+
+> Example of the **OLDSCHOOL_CHOICE_LIST** and **TOGGLE_WINDOW_MODE** features
+
 ![Screenshot](https://cdn.discordapp.com/attachments/166299388799483904/409870616691212289/unknown.png)
+
+> Example of the **DOUBLE_FONT_SIZE** feature (false)
+
 ![Screenshot](https://cdn.discordapp.com/attachments/166299388799483904/409871176681127936/unknown.png)
+
+> Example of the default menu displayed with the **BITMAP_FONT** feature
+
+![Screenshot](https://cdn.discordapp.com/attachments/410183660520865793/413601725966974976/unknown.png)
+![Screenshot](https://cdn.discordapp.com/attachments/410183660520865793/413601891281272832/unknown.png)
+![Screenshot](https://cdn.discordapp.com/attachments/410183660520865793/413601963465375744/unknown.png)
+
+> Examples of a game using orms and Luna Engine (by **JosephSeraph**)
+
 ![Screenshot](https://cdn.discordapp.com/attachments/410183660520865793/410261416956657675/unknown.png)
 
+> Example of a **customized** bitmap font (by **JosephSeraph**)
 
 ---
 
-## HOW TO MAKE YOUR OWN AWESOME BITMAP FONT
+# HOW TO MAKE YOUR OWN AWESOME BITMAP FONT
 
 The **Font.png** is generated by the awesome tool [Fony](https://fony.en.softonic.com/#app-softonic-review)
 
@@ -82,6 +160,10 @@ After that you need to have **all the bottom line transparent** for all the char
 
 ![Fony](https://cdn.discordapp.com/attachments/166299388799483904/410159035229405195/unknown.png)
 
+**NOTE :** You also need to have **all the right column transparent** for all the characters, to render the text shadow without trouble!
+
+Use the same method as above, but with the **"left"** button!
+
 6. Save your new font, and do **File > Export > Bitmap**, save as "Font.png" in `Graphics/System/`
 
 Then you get A SHINY PERFECT NEW "FONT.PNG" YOU CAN EDIT BACK WITH FONY ULTRA QUICKLY ANYTIME!!
@@ -107,16 +189,19 @@ And since the height is now smaller, you can also reduce the line height :
   LINE_HEIGHT           = 24    # Line height: VXAce: 24  2K(3): 32
 ```
 
+# CUSTOM FONT ISSUES WITH FONY
+
+Of course you can edit the font you want with Fony, ".fon" or not. But there is some important things to verify before the bitmap exportation!
+
+* You **must** have a **blank row** at the bottom and a **blank column** at the right
+  ![Screenshot](http://image.noelshack.com/fichiers/2018/07/7/1518994050-fony-blank-row-column.png)
+  If not, just select all the characters into the right pannel and use the arrows button.
+* In **Edit > Properties** (Ctrl + H), you **must** set the **First char** to 0, tue **Last char** to 255 and check **Monospaced**
+  ![Screenshot](http://image.noelshack.com/fichiers/2018/07/7/1518993684-fony-properties.png)
+
 ---
 
-## ChangeLog
-
-- `1.0.0 => 06/02/2018` First release
-- `1.0.1 => 08/02/2018` RME + Fullscreen++ compatibility
-- `1.0.3 => 09/02/2018` Change RME issue + clean `toggle_screen_input` + add wrong version number \o/
-- `1.0.4 => 16/02/2018` Fix transitions + missing update for `pixelate_screen`
-
-## COMING SOON!
+# COMING SOON!
 
 **TODO LIST:**
 

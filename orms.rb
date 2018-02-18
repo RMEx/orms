@@ -1,27 +1,16 @@
 # -*- coding: utf-8 -*-
 #==============================================================================
-# ** OLD_RM_STYLE  V. 1.0.4
+# ** OLD_RM_STYLE  V. 1.1.0
 #------------------------------------------------------------------------------
 # By Joke @biloumaster <joke@biloucorp.com>
 # GitHub: https://github.com/RMEx/OLD_RM_STYLE
 #------------------------------------------------------------------------------
 # Make a RM2K(3)-like game with RMVXAce!
-#
-# - Can use "Graphics/System/Font.png" and "Graphics/System/Font_color.png" to
-#   write awesome OldSchool texts
-# - Can make the window box opaque (like RM2K) and/or stop the cursor blinking
-# - Can display the choice list inside the dialogue like RM2K(3)
-# - Can set shortcuts F4: toggle fullscreen, F5: toggle AWESOME TINY WINDOW MODE
-# - Can pixelate the screen display (for the care of the detail)
-# - Can set the resolution to 640*480 (okay, it's just one line BUT YES IT CAN)
-# - Can use RM2K(3) graphics directly (set all RESSOURCES_FEATURES to "true")
-# - Can align the battlebacks to top (for RM2K backdrops)
-# - Can deactivate the dash (shift)
-#
-# In short ... configure it!
-#
+# (or the oldschool overkill game that you dreamed for a long time)
+# See the "ORMS_CONFIG" module below to see all the features and configure it!
+# Go on the GitHub page to learn more about the bitmap fonts and the features!
 #------------------------------------------------------------------------------
-# ** Additional methods:
+# ** Ingame methods:
 #------------------------------------------------------------------------------
 # - Orms.set(feature, state)  # Change the features ingame
 #                               (example: Orms.set(:bitmap_font, false))
@@ -48,11 +37,10 @@ module ORMS_CONFIG
     PADDING               = 16    # Padding:     VXAce: 12  2K(3): 16
     SHADOW                = true  # Draw text shadow using the last color in "Font_color.png"
     REWRITE_ALL_TEXTS     = true  # Rewrite Bitmap.draw_text instead of Window_Base.draw_text
-                                  #   Try this only if you have problem of compatibility
-                                  #   Can create other problems... It's like blue/red pills!
+
   # BOX_FEATURES:
     OPAQUE_BOX            = false # Opaque text box if true
-    STOP_CURSOR_BLINKING  = true  # Stop cursor blinking if false
+    STOP_CURSOR_BLINKING  = true  # Stop cursor blinking if true
     OLDSCHOOL_CHOICE_LIST = true  # RM2K(3)-like choice list like if true
   
   # SCREEN_FEATURES:
