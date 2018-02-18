@@ -63,7 +63,7 @@ module ORMS_CONFIG
                                   #   Re-define also the Fullscreen++ shortcuts if you use it too.
                                   #   If you use Fullscreen++, place Fullscreen++ right before orms!
 
-    PIXELATE_SCREEN       = true  # If you want fat pixels everywhere!
+    PIXELATE_SCREEN       = false # If you want fat pixels everywhere!
                                   #   This feature is a bit greedy, but it tries to optimize itself with
                                   #   a custom frame skipping method. This feature activate a custom FPS
                                   #   display (F2) that shows the real FPS, counting the frame skipping.
@@ -1186,6 +1186,7 @@ module Toggle_Screen
     # * Toggle screen_pixelation ON/OFF
     #--------------------------------------------------------------------------
     def toggle_pixelation
+      return unless Module.const_defined?(:ORMS_MESSAGE)
       if ORMS_CONFIG::PIXELATE_SCREEN
         ORMS_MESSAGE.display("pixelation OFF", 11)
         Orms.set(:pixelate_screen, false)
@@ -1251,6 +1252,12 @@ begin
       r = 0.5 if ratio == 0 unless fullscreen?
       r = 1 if r == 1.5
       zeus_set_ratio(r)
+    end
+    unless Module.const_defined?(:ORMS_MESSAGE)
+      def update
+        release_alt if Disable_VX_Fullscreen and Input.trigger?(Input::ALT)
+        zeus_fullscreen_update
+      end
     end
   end
   module Toggle_Screen
