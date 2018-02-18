@@ -56,10 +56,24 @@ module ORMS_CONFIG
     OLDSCHOOL_CHOICE_LIST = true  # RM2K(3)-like choice list like if true
   
   # SCREEN_FEATURES:
-    TOGGLE_SCREEN_INPUT   = true  # RM2K(3)-like F4 and F5 input (TINY WINDOW WITH F5!!!)
-    PIXELATE_SCREEN       = false # If you want fat pixels everywhere
-    OLD_RESOLUTION        = false # Just set game resolution to 640*480
-  
+    OLD_RESOLUTION        = false # Just set game resolution to 640*480 (to simulate RM2k(3)'s 320*240)
+    TOGGLE_FULLSCREEN     = :F4   # The shortcut (:F3..:F11) to toggle the fullscreen mode like RM2k(3)
+    TOGGLE_WINDOW_MODE    = :F5   # The shortcut (:F3..:F11) to toggle to TINY 1x WINDOW MODE like RM2k(3)
+                                  #   Define also the Fullscreen++ shortcuts if you use it too.
+                                  #   If you use Fullscreen++, place Fullscreen++ right before orms!
+                                  #   Set the shortcut to 0 if you don't want it.
+    PIXELATE_SCREEN       = true  # If you want fat pixels everywhere!
+                                  #   This feature is a bit greedy, I try my best with a custom
+                                  #   dynamic frame skipping system that kill the default one and
+                                  #   is way smoother, but you still can have a bit slowdown on bad
+                                  #   computers, or get a black screen with some nervous other scripts.
+                                  #   Just try and don't forget to tell the player he can deactivate
+                                  #   /activate the pixelation with the shortcut you define below,
+                                  #   and you can use Orms.set(:pixelate_screen, false) for the scenes
+                                  #   where you have a black screen or FPS drop.
+    PIXELATION_SHORTCUT   = :F6   # The shortcut (:F3..:F11) to activate/deactivate pixelation ingame.
+                                  #   Set the shortcut to 0 if you don't want it.
+
   # RESSOURCES_FEATURES:
     USE_OLD_RM_BACKDROP   = false # Battlebacks1/2 auto-resized by two
     USE_OLD_RM_MONSTER    = false # Battlers auto-resized by two
@@ -103,9 +117,13 @@ module Orms
   def activate
     @active = true
   end
-  def active?
+  def active?(feature = true)
     @active = true if @active.nil?
-    @active
+    if feature.is_a?(Symbol)
+      feature = feature.to_s.upcase.to_sym
+      feature = ORMS_CONFIG.const_get(feature)
+    end
+    @active && feature
   end
 end
 
@@ -262,7 +280,6 @@ end
 #  Use the bitmap font picture to draw texts
 #==============================================================================
 
-if ORMS_CONFIG::BITMAP_FONT
 
 #==============================================================================
 # ** ORMS_Bitmap_Font
@@ -286,7 +303,7 @@ module ORMS_Bitmap_Font
         # * Get Text Size
         #--------------------------------------------------------------------------
         def text_size(str)
-          return orms_text_size(str) unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+          return orms_text_size(str) unless Orms.active?(:bitmap_font)
           s = ORMS_CONFIG::DOUBLE_FONT_SIZE ? 2 : 1
           w = ORMS_CONFIG::FONT_WIDTH
           h = ORMS_CONFIG::FONT_HEIGHT
@@ -297,7 +314,7 @@ module ORMS_Bitmap_Font
         # * Draw Text
         #--------------------------------------------------------------------------
         def draw_text(*args)
-          return orms_draw_text(*args) unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+          return orms_draw_text(*args) unless Orms.active?(:bitmap_font)
           if args.length.between?(2,4)
             x, y, width, text = args[0].x, args[0].y, args[0].width, args[1].to_s.clone
             align    = args[2] || 0
@@ -339,6 +356,18 @@ module ORMS_Bitmap_Font
 end
 
 #==============================================================================
+# ** ORMS_Bitmap
+#------------------------------------------------------------------------------
+#  can draw with the bitmap font!
+#==============================================================================
+
+class ORMS_Bitmap < Bitmap
+  include ORMS_Bitmap_Font
+end
+
+if ORMS_CONFIG::BITMAP_FONT
+
+#==============================================================================
 # ** Window_Base
 #==============================================================================
 
@@ -355,7 +384,7 @@ class Window_Base
   #--------------------------------------------------------------------------
   alias_method :orms_draw_text, :draw_text
   def draw_text(*args)
-    return orms_draw_text(*args) unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+    return orms_draw_text(*args) unless Orms.active?(:bitmap_font)
     args.push(0) if args.length == 2 || args.length == 5
     args.push(@color_id)
     contents.draw_text(*args)
@@ -375,9 +404,7 @@ class Window_Base
   #--------------------------------------------------------------------------
   alias_method :orms_change_color, :change_color
   def change_color(color, enabled = true)
-    unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
-      return orms_change_color(color, enabled)
-    end
+    return orms_change_color(color, enabled) unless Orms.active?(:bitmap_font)
     contents.font.color.set(enabled ? color : text_color(3))
   end
   #--------------------------------------------------------------------------
@@ -385,7 +412,7 @@ class Window_Base
   #--------------------------------------------------------------------------
   alias_method :orms_calc_line_height, :calc_line_height
   def calc_line_height(text, restore_font_size = true)
-    unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+    unless Orms.active?(:bitmap_font)
       return orms_calc_line_height(text, restore_font_size)
     end
     return line_height
@@ -395,7 +422,7 @@ class Window_Base
   #--------------------------------------------------------------------------
   alias_method :orms_line_height, :line_height
   def line_height
-    return orms_line_height unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+    return orms_line_height unless Orms.active?(:bitmap_font)
     return ORMS_CONFIG::LINE_HEIGHT
   end
 end
@@ -420,7 +447,7 @@ class Window_Message
   #--------------------------------------------------------------------------
   alias_method :orms_draw_face, :draw_face
   def draw_face(*args)
-    return orms_draw_face(*args) unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+    return orms_draw_face(*args) unless Orms.active?(:bitmap_font)
     args[2] = args[3] = (contents_height - 96) / 2
     orms_draw_face(*args)
   end
@@ -429,7 +456,7 @@ class Window_Message
   #--------------------------------------------------------------------------
   alias_method :orms_new_line_x, :new_line_x
   def new_line_x
-    return orms_new_line_x unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+    return orms_new_line_x unless Orms.active?(:bitmap_font)
     x = [96, height - standard_padding].max
     $game_message.face_name.empty? ? 0 : x
   end
@@ -438,35 +465,35 @@ class Window_Message
   #--------------------------------------------------------------------------
   alias_method :orms_standard_padding, :standard_padding
   def standard_padding
-    return orms_standard_padding unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+    return orms_standard_padding unless Orms.active?(:bitmap_font)
     return ORMS_CONFIG::PADDING
   end
 end
 class Window_ActorCommand
   alias_method :orms_standard_padding, :standard_padding
   def standard_padding
-    return orms_standard_padding unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+    return orms_standard_padding unless Orms.active?(:bitmap_font)
     return ORMS_CONFIG::PADDING
   end
 end
 class Window_BattleStatus
   alias_method :orms_standard_padding, :standard_padding
   def standard_padding
-    return orms_standard_padding unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+    return orms_standard_padding unless Orms.active?(:bitmap_font)
     return ORMS_CONFIG::PADDING
   end
 end
 class Window_BattleEnemy
   alias_method :orms_standard_padding, :standard_padding
   def standard_padding
-    return orms_standard_padding unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+    return orms_standard_padding unless Orms.active?(:bitmap_font)
     return ORMS_CONFIG::PADDING
   end
 end
 class Window_PartyCommand
   alias_method :orms_standard_padding, :standard_padding
   def standard_padding
-    return orms_standard_padding unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+    return orms_standard_padding unless Orms.active?(:bitmap_font)
     return ORMS_CONFIG::PADDING
   end
 end
@@ -481,7 +508,7 @@ class Window_MenuStatus
   #--------------------------------------------------------------------------
   alias_method :orms_draw_item, :draw_item
   def draw_item(index)
-    return orms_draw_item(index) unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+    return orms_draw_item(index) unless Orms.active?(:bitmap_font)
     actor = $game_party.members[index]
     enabled = $game_party.battle_members.include?(actor)
     rect = item_rect(index)
@@ -501,7 +528,7 @@ class Window_TitleCommand
   #--------------------------------------------------------------------------
   alias_method :orms_window_width, :window_width
   def window_width
-    return orms_window_width unless Orms.active? && ORMS_CONFIG::BITMAP_FONT
+    return orms_window_width unless Orms.active?(:bitmap_font)
     s = ORMS_CONFIG::DOUBLE_FONT_SIZE ? 2 : 1
     max = @list.map {|i| i[:name].length * ORMS_CONFIG::FONT_WIDTH * s}.max
     max + 2 * standard_padding + 8
@@ -536,7 +563,7 @@ class Window_Base
   alias_method :orms_opaque_initialize, :initialize
   def initialize(*args)
     orms_opaque_initialize(*args)
-    self.back_opacity = 255 if Orms.active? && ORMS_CONFIG::OPAQUE_BOX
+    self.back_opacity = 255 if Orms.active?(:opaque_box)
   end
 end
 
@@ -560,12 +587,12 @@ class Window
   #--------------------------------------------------------------------------
   alias_method :orms_active, :active
   def active
-    return orms_active unless Orms.active? && ORMS_CONFIG::STOP_CURSOR_BLINKING
+    return orms_active unless Orms.active?(:stop_cursor_blinking)
     @active
   end
   alias_method :orms_blink_active, :active=
   def active=(index)
-    return orms_blink_active(index) unless Orms.active? && ORMS_CONFIG::STOP_CURSOR_BLINKING
+    return orms_blink_active(index) unless Orms.active?(:stop_cursor_blinking)
     orms_blink_active(false)
     @active = index
   end
@@ -574,7 +601,7 @@ class Window
   #--------------------------------------------------------------------------
   alias_method :orms_blink_cursor_rect, :cursor_rect
   def cursor_rect
-    orms_blink_active(false) if Orms.active? && ORMS_CONFIG::STOP_CURSOR_BLINKING
+    orms_blink_active(false) if Orms.active?(:stop_cursor_blinking)
     orms_blink_cursor_rect
   end
 end
@@ -634,7 +661,7 @@ class Window_ChoiceList
   alias_method :oldschool_choice_initialize, :initialize
   def initialize(message_window)
     oldschool_choice_initialize(message_window)
-    if Orms.active? && ORMS_CONFIG::OLDSCHOOL_CHOICE_LIST
+    if Orms.active?(:oldschool_choice_list)
       self.windowskin = Cache.system("Window").clone
       self.windowskin.fill_rect(Rect.new(0,0,168,64), Color.new(0,0,0,0))
     end
@@ -644,7 +671,7 @@ class Window_ChoiceList
   #--------------------------------------------------------------------------
   alias_method :orms_start, :start
   def start
-    if Orms.active? && ORMS_CONFIG::OLDSCHOOL_CHOICE_LIST
+    if Orms.active?(:oldschool_choice_list)
       if @message_window.openness == 0
         @message_window.create_contents
         @message_window.line_number = 0
@@ -663,7 +690,7 @@ class Window_ChoiceList
   #--------------------------------------------------------------------------
   alias_method :orms_update_placement, :update_placement
   def update_placement
-    orms_update_placement unless Orms.active? && ORMS_CONFIG::OLDSCHOOL_CHOICE_LIST
+    orms_update_placement unless Orms.active?(:oldschool_choice_list)
     self.x = @message_window.new_line_x + 6
     self.y = @message_window.y + @message_window.line_number * @message_window.line_height
     self.width = @message_window.width - self.x - 10
@@ -695,7 +722,7 @@ class Sprite_Character
   #--------------------------------------------------------------------------
   alias_method :orms_update_src_rect, :update_src_rect
   def update_src_rect
-    return orms_update_src_rect unless Orms.active? && ORMS_CONFIG::OLD_CHARSET_DIRECTION
+    return orms_update_src_rect unless Orms.active?(:old_charset_direction)
     if @tile_id == 0
       direction = [2, 3, 1, 0][@character.direction / 2 - 1]
       index = @character.character_index
@@ -718,7 +745,7 @@ class Game_Event
   alias_method :orms_setup_page_setting, :setup_page_settings
   def setup_page_settings
     orms_setup_page_setting
-    if Orms.active? && ORMS_CONFIG::OLD_CHARSET_DIRECTION
+    if Orms.active?(:old_charset_direction)
       @original_direction = @direction = [8, 6, 2, 4][@page.graphic.direction / 2 - 1]
     end
   end
@@ -736,35 +763,115 @@ if ORMS_CONFIG::KILL_CHARSET_SHIFT_Y
 class Game_CharacterBase
   alias_method :orms_shift_y, :shift_y
   def shift_y
-    return orms_shift_y unless Orms.active? && ORMS_CONFIG::KILL_CHARSET_SHIFT_Y
+    return orms_shift_y unless Orms.active?(:kill_charset_shift_y)
     return 0
   end
 end
 end
 
 #==============================================================================
-# ** PIXELATE_SCREEN and TOGGLE_SCREEN_INPUT
+# ** PIXELATE_SCREEN
 #------------------------------------------------------------------------------
-#  PIXELATE_SCREEN: If you want fat pixels everywhere
-#  TOGGLE_SCREEN_INPUT: RM2K(3)-like F4 and F5 input (TINY WINDOW WITH F5!!!)
+#  If you want fat pixels everywhere
 #==============================================================================
 
 if ORMS_CONFIG::PIXELATE_SCREEN
 
 #==============================================================================
-# ** Avoid missing graphical update after window close processing
-#  Not notable without screen pixelation
+# ** ORMS_FPS
+#------------------------------------------------------------------------------
+#  Calculate the FPS of the RGSS processing and the screen refreshing
 #==============================================================================
-class Window_Base
+
+module ORMS_FPS
+  extend self
   #--------------------------------------------------------------------------
-  # * Update Close Processing
+  # * Public instance variables
   #--------------------------------------------------------------------------
-  alias_method :orms_update_close, :update_close
-  def update_close
-    orms_update_close
-    Graphics.pixelate_screen if close?
+  attr_reader :screen_fps, :rgss_fps, :visible
+  attr_accessor :previous_time
+  #--------------------------------------------------------------------------
+  # * Update rate: Number of times the FPS is calculated per second
+  #--------------------------------------------------------------------------
+  UPDATE_RATE = 1.0
+  #--------------------------------------------------------------------------
+  # * Update
+  #--------------------------------------------------------------------------
+  def update
+    @frame_count ||= 0
+    @frame_count += 1
+    dt = Time.now - @previous_time
+    if dt >= 1.0 / UPDATE_RATE
+      @rgss_fps = (@frame_count / dt).round
+      if Orms.active?(:pixelate_screen)
+        sframe_count = Graphics.frame_counter || Graphics.frame_rate
+        @screen_fps = (sframe_count / dt).round
+      else
+        @screen_fps = @rgss_fps
+      end
+      Graphics.frame_counter = 0
+      @frame_count = 0
+      @previous_time = Time.now
+      update_counter
+    end
+  end
+  #--------------------------------------------------------------------------
+  # * Initialize the displayed counter
+  #--------------------------------------------------------------------------
+  def initialize_counter
+    @background = Sprite.new(Viewport.new(4, 4, 200, 30))
+    @background.viewport.z = 600
+    @background.bitmap = Bitmap.new(1, 1)
+    @background.bitmap.set_pixel(0, 0, Color.new(0, 0, 0, 127))
+    @counter = Sprite.new(@background.viewport)
+    if Class.const_defined?(:ORMS_Bitmap)
+      @counter.bitmap = ORMS_Bitmap.new(200, 30)
+    else
+      @counter.bitmap = Bitmap.new(200, 30)
+    end
+    @counter.x = 2
+    @counter.y = -4
+    @counter.z = 10
+  end
+  #--------------------------------------------------------------------------
+  # * Update the displayed counter
+  #--------------------------------------------------------------------------
+  def update_counter
+    @visible ||= false
+    return unless @visible
+    if @counter.nil? || @counter.disposed?
+      @visible ? initialize_counter : return
+    end
+    text = [@rgss_fps, @screen_fps].uniq
+    size  = @counter.bitmap.text_size(text.join("~"))
+    size2 = @counter.bitmap.text_size(text[0].to_s) if text.length == 2
+    @background.zoom_x = size.width  + 4
+    @background.zoom_y = size.height - 6
+    @counter.bitmap.clear
+    color = 9
+    color = 4  if text[0] <= 30
+    color = 11 if text[0] <= 15
+    @counter.bitmap.draw_text(size, text[0].to_s, 0, color)
+    if text.length == 2
+      size.x = size2.width
+      size.width -= size2.width
+      @counter.bitmap.draw_text(size, "~" + text[1].to_s, 0, 3)
+    end
+  end
+  #--------------------------------------------------------------------------
+  # * Toggle the counter display
+  #--------------------------------------------------------------------------
+  def toggle_display
+    initialize_counter if @counter.nil? || @counter.disposed?
+    @visible = !@visible
+    visible = @visible
+  end
+  def visible=(v)
+    return if @counter.nil? || @counter.disposed?
+    @counter.visible = @background.visible = v
   end
 end
+
 #==============================================================================
 # ** Graphics
 #==============================================================================
@@ -773,23 +880,45 @@ class << Graphics
   #--------------------------------------------------------------------------
   # * Public instance variables
   #--------------------------------------------------------------------------
-  attr_accessor :orms_screen
+  attr_accessor :orms_screen, :frame_counter
   #--------------------------------------------------------------------------
   # * Update the screen display
   #--------------------------------------------------------------------------
   alias_method :orms_graphics_update, :update
   def update
-    @skip ||= 0
-    @skip %= 2
-    pixelate_screen if @skip == 0
-    @skip += 1
-    orms_graphics_update
+    ORMS_FPS.previous_time ||= Time.now
+    update_screen_display
+    if respond_to?(:zeus_fullscreen_update)
+      release_alt if Disable_VX_Fullscreen and Input.trigger?(Input::ALT)
+      zeus_fullscreen_update
+    else
+      orms_graphics_update
+    end
+    ORMS_FPS.update
+  end
+  #--------------------------------------------------------------------------
+  # * Dynamic frame skipping for performance issues
+  #  Kill the default frame skipping while the RGSS FPS < 50
+  #--------------------------------------------------------------------------
+  def update_screen_display
+    return unless Orms.active?(:pixelate_screen)
+    @timer ||= 0
+    fps = ORMS_FPS.rgss_fps || frame_rate
+    fps = [fps, frame_rate].min
+    @timer = 0 if @timer >= (frame_rate.to_f / [fps, 20].max).round
+    if @timer == 0
+      pixelate_screen
+      @frame_counter ||= 0
+      @frame_counter += 1
+    end
+    @timer += 1
+    frame_reset unless fps >= frame_rate - 10
   end
   #--------------------------------------------------------------------------
   # * Pixelate the screen
   #--------------------------------------------------------------------------
   def pixelate_screen
-    return unless Orms.active? && ORMS_CONFIG::PIXELATE_SCREEN
+    return unless Orms.active?(:pixelate_screen)
     w, h = Graphics.width / 2, Graphics.height / 2
     if @orms_screen.nil? || @orms_screen.disposed?
       @orms_screen = Sprite.new
@@ -800,10 +929,12 @@ class << Graphics
       @orms_screen.viewport.z = 500
     end
     @orms_screen.visible = false
+    ORMS_FPS.visible = false
     snap = snap_to_bitmap
     @orms_screen.bitmap.stretch_blt(Rect.new(0, 0, w, h), snap, snap.rect)
     snap.dispose
     @orms_screen.visible = true
+    ORMS_FPS.visible = ORMS_FPS.visible
   end
   #--------------------------------------------------------------------------
   # * Make a transition
@@ -815,6 +946,21 @@ class << Graphics
   end
 end
 
+#==============================================================================
+# ** Avoid missing graphical update after window close processing
+#==============================================================================
+
+class Window_Base
+  #--------------------------------------------------------------------------
+  # * Update Close Processing
+  #--------------------------------------------------------------------------
+  alias_method :orms_update_close, :update_close
+  def update_close
+    orms_update_close
+    Graphics.pixelate_screen if close?
+  end
+end
+
 end
 
 #==============================================================================
@@ -822,8 +968,6 @@ end
 #------------------------------------------------------------------------------
 #  RM2K(3)-like F4 and F5 input (TINY WINDOW WITH F5!!!)
 #==============================================================================
-
-if ORMS_CONFIG::TOGGLE_SCREEN_INPUT
 
 #==============================================================================
 # ** Input
@@ -858,28 +1002,61 @@ module Toggle_Screen
     # * Win32API methods
     #--------------------------------------------------------------------------
     SetWindowPos 	       = Win32API.new 'user32', 'SetWindowPos', 'iiiiiii', 'i'
-    SystemParametersInfo = Win32API.new 'user32', 'SystemParametersInfo', 'iipi', 'i'
     GetWindowRect        = Win32API.new 'user32', 'GetWindowRect', 'ip', 'i'
     GetClientRect        = Win32API.new 'user32', 'GetClientRect', 'ip', 'i'
-    KeybdEvent 		       = Win32API.new 'user32.dll', 'keybd_event', 'iill', 'v'
-    FindWindow           = Win32API.new'user32', 'FindWindow', 'pp', 'i'
     GetKeyState          = Win32API.new 'user32', 'GetKeyState', 'p', 'i'
+    FindWindow           = Win32API.new'user32', 'FindWindow', 'pp', 'i'
     HWND                 = FindWindow.call 'RGSS Player', 0
     #--------------------------------------------------------------------------
-    # * Check F4 and F5 keyboard state and toggle
+    # * Get key code (:F5 => 0x74)
+    #--------------------------------------------------------------------------
+    def get_key_code(sym)
+      return 0 unless sym.is_a?(Symbol)
+      sym = sym.to_s.upcase
+      sym.slice!(0)
+      0x6F + sym.to_i
+    end
+    #--------------------------------------------------------------------------
+    # * Initialize the given shortcuts
+    #--------------------------------------------------------------------------
+    def initialize_shortcuts
+      return if @tf_sc
+      @tf_sc ||= get_key_code(ORMS_CONFIG::TOGGLE_FULLSCREEN)
+      @tw_sc ||= get_key_code(ORMS_CONFIG::TOGGLE_WINDOW_MODE)
+      @ps_sc ||= get_key_code(ORMS_CONFIG::PIXELATION_SHORTCUT)
+    end
+    #--------------------------------------------------------------------------
+    # * Check keyboard state and toggle
     #--------------------------------------------------------------------------
     def check_input
-      if GetKeyState.call(0x73) < 0
-        toggle_fullscreen unless @f4
-        @f4 = true
+      initialize_shortcuts
+      # check_fullscreen_shortcut
+      if GetKeyState.call(@tf_sc) < 0 && Orms.active?(:toggle_fullscreen)
+        toggle_fullscreen unless @tf
+        @tf = true
       else
-        @f4 = false
+        @tf = false
       end
-      if GetKeyState.call(0x74) < 0
-        toggle_size unless @f5 || @toggle_fullscreen
-        @f5 = true
+      # check_window_mode_shortcut
+      if GetKeyState.call(@tw_sc) < 0 && Orms.active?(:toggle_window_mode)
+        toggle_size unless @tw || @fullscreen
+        @tw = true
       else
-        @f5 = false
+        @tw = false
+      end
+      # check_pixelation_shortcut
+      if GetKeyState.call(@ps_sc) < 0 && Orms.active?(:pixelation_shortcut)
+        toggle_pixelation unless @ps
+        @ps = true
+      else
+        @ps = false
+      end
+      # check_fps_display_shortcut
+      if GetKeyState.call(0x71) < 0 && Module.const_defined?(:ORMS_FPS)
+        ORMS_FPS.toggle_display unless @fp
+        @fp = true
+      else
+        @fp = false
       end
     end
     #--------------------------------------------------------------------------
@@ -926,11 +1103,15 @@ module Toggle_Screen
       KeybdEvent.call 13, 0, 0, 0
       KeybdEvent.call 13, 0, 2, 0
       KeybdEvent.call 0xA4, 0, 2, 0
-      @toggle_fullscreen = !@toggle_fullscreen
+      @fullscreen = !@fullscreen
+    end
+    #--------------------------------------------------------------------------
+    # * Toggle screen_pixelation ON/OFF
+    #--------------------------------------------------------------------------
+    def toggle_pixelation
+      Orms.set(:pixelate_screen, !ORMS_CONFIG::PIXELATE_SCREEN)
     end
   end
-end
-
 end
 
 #==============================================================================
@@ -959,7 +1140,7 @@ class Game_Player
   #--------------------------------------------------------------------------
   alias_method :orms_dash?, :dash?
   def dash?
-    return orms_dash? unless Orms.active? && ORMS_CONFIG::DEACTIVATE_DASH
+    return orms_dash? unless Orms.active?(:deactivate_dash)
     return false
   end
 end
@@ -972,8 +1153,6 @@ end
 #  Get Fullscreen++:
 # https://forums.rpgmakerweb.com/index.php?threads/fullscreen.14081/
 #==============================================================================
-
-if ORMS_CONFIG::TOGGLE_SCREEN_INPUT
 
 begin
   class << Graphics
@@ -992,10 +1171,12 @@ begin
     end
   end
   module Toggle_Screen
-    def self.check_input
+    def self.toggle_size
+      Graphics.toggle_ratio
+    end
+    def self.toggle_fullscreen
+      Graphics.toggle_fullscreen
     end
   end
 rescue
-end
-
 end
