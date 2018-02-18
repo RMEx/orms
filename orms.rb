@@ -59,20 +59,19 @@ module ORMS_CONFIG
     OLD_RESOLUTION        = false # Just set game resolution to 640*480 (to simulate RM2k(3)'s 320*240)
     TOGGLE_FULLSCREEN     = :F4   # The shortcut (:F3..:F11) to toggle the fullscreen mode like RM2k(3)
     TOGGLE_WINDOW_MODE    = :F5   # The shortcut (:F3..:F11) to toggle to TINY 1x WINDOW MODE like RM2k(3)
-                                  #   Define also the Fullscreen++ shortcuts if you use it too.
+                                  #   Set the shortcut to 0 if you want none.
+                                  #   Re-define also the Fullscreen++ shortcuts if you use it too.
                                   #   If you use Fullscreen++, place Fullscreen++ right before orms!
-                                  #   Set the shortcut to 0 if you don't want it.
+
     PIXELATE_SCREEN       = true  # If you want fat pixels everywhere!
-                                  #   This feature is a bit greedy, I try my best with a custom
-                                  #   dynamic frame skipping system that kill the default one and
-                                  #   is way smoother, but you still can have a bit slowdown on bad
-                                  #   computers, or get a black screen with some nervous other scripts.
-                                  #   Just try and don't forget to tell the player he can deactivate
-                                  #   /activate the pixelation with the shortcut you define below,
-                                  #   and you can use Orms.set(:pixelate_screen, false) for the scenes
-                                  #   where you have a black screen or FPS drop.
+                                  #   This feature is a bit greedy, but it tries to optimize itself with
+                                  #   a custom frame skipping method. This feature activate a custom FPS
+                                  #   display (F2) that shows the real FPS, counting the frame skipping.
+
     PIXELATION_SHORTCUT   = :F6   # The shortcut (:F3..:F11) to activate/deactivate pixelation ingame.
-                                  #   Set the shortcut to 0 if you don't want it.
+                                  #   Set the shortcut to 0 if you want none.
+                                  #   Don't forget to tell the player he can use this shortcut!
+                                  #   An alternative is to use the "Orms.set(:pixelate_screen, false)" method
 
   # RESSOURCES_FEATURES:
     USE_OLD_RM_BACKDROP   = false # Battlebacks1/2 auto-resized by two
@@ -102,7 +101,9 @@ module Orms
       Graphics.orms_screen.dispose if [feature, state] == [:PIXELATE_SCREEN, false]
     end
     if SceneManager.scene.is_a?(Scene_Map) || SceneManager.scene.is_a?(Scene_Battle)
-      SceneManager.scene.create_all_windows
+      if [:BITMAP_FONT, :LINE_HEIGHT, :PADDING].include?(feature)
+        SceneManager.scene.create_all_windows
+      end
     end
   end
   def deactivate
@@ -314,7 +315,10 @@ module ORMS_Bitmap_Font
         # * Draw Text
         #--------------------------------------------------------------------------
         def draw_text(*args)
-          return orms_draw_text(*args) unless Orms.active?(:bitmap_font)
+          unless Orms.active?(:bitmap_font)
+            args.pop if args.length == 4 || args.length == 7
+            return orms_draw_text(*args)
+          end
           if args.length.between?(2,4)
             x, y, width, text = args[0].x, args[0].y, args[0].width, args[1].to_s.clone
             align    = args[2] || 0
@@ -362,6 +366,8 @@ end
 #==============================================================================
 
 class ORMS_Bitmap < Bitmap
+  alias_method :orms_draw_text, :draw_text
+  alias_method :orms_text_size, :text_size
   include ORMS_Bitmap_Font
 end
 
@@ -824,9 +830,9 @@ module ORMS_FPS
     @background.bitmap = Bitmap.new(1, 1)
     @background.bitmap.set_pixel(0, 0, Color.new(0, 0, 0, 127))
     @counter = Sprite.new(@background.viewport)
-    if Class.const_defined?(:ORMS_Bitmap)
+    begin
       @counter.bitmap = ORMS_Bitmap.new(200, 30)
-    else
+    rescue
       @counter.bitmap = Bitmap.new(200, 30)
     end
     @counter.x = 2
@@ -873,6 +879,77 @@ module ORMS_FPS
 end
 
 #==============================================================================
+# ** ORMS_MESSAGE
+#------------------------------------------------------------------------------
+#  Display messages at top/right screen corner (used for "pixelation ON/OFF")
+#==============================================================================
+
+module ORMS_MESSAGE
+  extend self
+  #--------------------------------------------------------------------------
+  # * Update the displayed message
+  #--------------------------------------------------------------------------
+  def update
+    create_message_sprite unless @message
+    @timer ||= 0
+    @message.opacity == 0 ? @timer = 0 : @timer += 1
+    @message.opacity -= 20 if @timer > 30
+  end
+  #--------------------------------------------------------------------------
+  # * Create the sprite
+  #--------------------------------------------------------------------------
+  def create_message_sprite
+    @message = Sprite.new(Viewport.new(Graphics.width - 200, 4, 204, 30))
+    @message.viewport.z = 600
+    @message.x = -4
+    @message.y = -2
+    @message.z = 10
+  end
+  #--------------------------------------------------------------------------
+  # * Display a message
+  #--------------------------------------------------------------------------
+  def display(text, color)
+    @message.bitmap = get_message_bitmap(text, color)
+    @message.opacity = 255
+  end
+  #--------------------------------------------------------------------------
+  # * Get the Bitmap corresponding to the message and cache it
+  #--------------------------------------------------------------------------
+  def get_message_bitmap(text, color)
+    @texts ||= Hash.new
+    if @texts[text].nil?
+      begin
+        @texts[text] = ORMS_Bitmap.new(200, 30)
+      rescue
+        @texts[text] = Bitmap.new(200, 30)
+      end
+      draw_message(@texts[text], text, color)
+    end
+    @texts[text]
+  end
+  #--------------------------------------------------------------------------
+  # * Draw the message into the Bitmap
+  #--------------------------------------------------------------------------
+  def draw_message(bmp, text, color)
+    size = bmp.text_size(text)
+    size.x = 200 - 4 - size.width
+    size.width  += 4
+    size.height += 4
+    rect = bmp.rect
+    rect.width -= 2
+    bmp.fill_rect(size, Color.new(0, 0, 0, 127))
+    bmp.draw_text(rect, text, 2, color)
+  end
+  #--------------------------------------------------------------------------
+  # * Hide/Show the message
+  #--------------------------------------------------------------------------
+  def visible=(v)
+    return unless @message
+    @message.visible = v
+  end
+end
+
+#==============================================================================
 # ** Graphics
 #==============================================================================
 
@@ -895,6 +972,7 @@ class << Graphics
       orms_graphics_update
     end
     ORMS_FPS.update
+    ORMS_MESSAGE.update
   end
   #--------------------------------------------------------------------------
   # * Dynamic frame skipping for performance issues
@@ -928,12 +1006,11 @@ class << Graphics
       @orms_screen.viewport = Viewport.new
       @orms_screen.viewport.z = 500
     end
-    @orms_screen.visible = false
-    ORMS_FPS.visible = false
+    @orms_screen.visible = ORMS_FPS.visible = ORMS_MESSAGE.visible = false
     snap = snap_to_bitmap
     @orms_screen.bitmap.stretch_blt(Rect.new(0, 0, w, h), snap, snap.rect)
     snap.dispose
-    @orms_screen.visible = true
+    @orms_screen.visible = ORMS_MESSAGE.visible = true
     ORMS_FPS.visible = ORMS_FPS.visible
   end
   #--------------------------------------------------------------------------
@@ -1109,7 +1186,13 @@ module Toggle_Screen
     # * Toggle screen_pixelation ON/OFF
     #--------------------------------------------------------------------------
     def toggle_pixelation
-      Orms.set(:pixelate_screen, !ORMS_CONFIG::PIXELATE_SCREEN)
+      if ORMS_CONFIG::PIXELATE_SCREEN
+        ORMS_MESSAGE.display("pixelation OFF", 11)
+        Orms.set(:pixelate_screen, false)
+      else
+        ORMS_MESSAGE.display("pixelation ON", 9)
+        Orms.set(:pixelate_screen, true)
+      end
     end
   end
 end
