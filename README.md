@@ -21,7 +21,8 @@
     - The shortcuts defined above now change also the `Fullscreen++` shortcuts
     - Implement dynamic frame skipping for the `PIXELATE_SCREEN` feature!
     - Implement additional FPS displayer which takes into account the dynamic frame skipping! Display it with `F2`!
-    - Add `PIXELATION_SHORTCUT` to set a shortcut that activate/deactivate the screen pixelation ingame!
+    - Add `PIXELATION_SHORTCUT` feature to set a shortcut that activate/deactivate the screen pixelation ingame!
+    - Add `BACKDROP_ALIGN_TOP` feature to align Battlebacks to top instead of center (for RM2K backdrops)
 
 ***
 
@@ -72,10 +73,10 @@ Feature | Description | Default value
 Feature | Description | Default value
 --- | --- | ---
 **OLD_RESOLUTION** | Just set game resolution to 640*480 (to simulate RM2k(3)'s 320*240) | false
-**TOGGLE_FULLSCREEN** | The shortcut (:F3..:F11) to toggle the fullscreen mode like RM2k(3).<br><br>Set the shortcut to 0 if you want none. | :F4
-**TOGGLE_WINDOW_MODE** | The shortcut (:F3..:F11) to toggle to TINY 1x WINDOW MODE like RM2k(3).<br><br>Set the shortcut to 0 if you want none. | :F5
+**[NEW!] TOGGLE_FULLSCREEN** | The shortcut (:F3..:F11) to toggle the fullscreen mode like RM2k(3).<br><br>Set the shortcut to 0 if you want none. | :F4
+**[NEW!] TOGGLE_WINDOW_MODE** | The shortcut (:F3..:F11) to toggle to TINY 1x WINDOW MODE like RM2k(3).<br><br>Set the shortcut to 0 if you want none. | :F5
 **PIXELATE_SCREEN** | If you want fat pixels everywhere!<br><br>This feature is a bit greedy, but it tries to optimize itself with a custom frame skipping method.<br><br>This feature activate a custom FPS display (F2) that shows the real FPS, counting the frame skipping. | false
-**PIXELATION_SHORTCUT** | The shortcut (:F3..:F11) to activate/deactivate pixelation ingame.<br><br>Set the shortcut to 0 if you want none.<br><br>Don't forget to tell the player he can use this shortcut! An alternative is to use the `Orms.set(:pixelate_screen, false)` method. | :F6
+**[NEW!] PIXELATION_SHORTCUT** | The shortcut (:F3..:F11) to activate/deactivate pixelation ingame.<br><br>Set the shortcut to 0 if you want none.<br><br>Don't forget to tell the player he can use this shortcut! An alternative is to use the `Orms.set(:pixelate_screen, false)` method. | :F6
 
 ### NOTE:
 **TOGGLE_FULLSCREEN** and **TOGGLE_WINDOW_MODE** re-define also the Fullscreen++ shortcuts if you use it too. If you use Fullscreen++, place Fullscreen++ right before orms!
@@ -93,7 +94,7 @@ Feature | Description | Default value
 **USE_OLD_RM_PICTURE** | Pictures auto-resized by two | false
 **USE_OLD_RM_TITLE** | Titles1/2 auto-resized by two | false
 **USE_OLD_RM_CHARSET** | Characters auto-resized by two | false
-**BACKDROP_ALIGN_TOP** | Align Battlebacks to top instead of center (for RM2K backdrops) | false
+**[NEW!] BACKDROP_ALIGN_TOP** | Align Battlebacks to top instead of center (for RM2K backdrops) | false
 **KILL_CHARSET_SHIFT_Y** | Does as if all "Characters" had "!" in their name | false
 **OLD_CHARSET_DIRECTION** | In VXAce's ressources, directions are "DOWN, LEFT, RIGHT, UP" but in RM2k(3)'s ressources, it's "UP, RIGHT, DOWN, LEFT"<br><br>this fix allows you to use directly charsets from 2k(3)! | false
 
@@ -102,6 +103,13 @@ Feature | Description | Default value
 --- | --- | ---
 **DEACTIVATE_DASH** | No dash when you press shift if true | false
 
+## [NEW!] INGAME METHODS FOR USERS
+
+Method | Description
+--- | ---
+`Orms.set(feature, false)` | Change the features ingame! Example: `Orms.set(:bitmap_font, false)`
+`Orms.deactivate` | Deactivate all the features
+`Orms.activate` | Activate all the features
 
 ---
 
