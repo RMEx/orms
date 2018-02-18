@@ -103,7 +103,9 @@ Feature | Description | Default value
 --- | --- | ---
 **DEACTIVATE_DASH** | No dash when you press shift if true | false
 
-## [NEW!] INGAME METHODS FOR USERS
+---
+
+# [NEW!] INGAME METHODS FOR USERS
 
 Method | Description
 --- | ---
@@ -136,7 +138,7 @@ Method | Description
 
 ![Screenshot](https://cdn.discordapp.com/attachments/410183660520865793/410261416956657675/unknown.png)
 
-> Example of a **customized** bitmap font (by **JosephSeraph**)
+> Example of a **beautiful customized** bitmap font (by **JosephSeraph**)
 
 ---
 
@@ -198,6 +200,8 @@ And since the height is now smaller, you can also reduce the line height :
 ```
   LINE_HEIGHT           = 24    # Line height: VXAce: 24  2K(3): 32
 ```
+
+---
 
 # CUSTOM FONT ISSUES WITH FONY
 
