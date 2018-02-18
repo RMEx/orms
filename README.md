@@ -3,6 +3,8 @@
 # [![RMEx](http://rmex.github.io/images/rmex-shortcut.png)](http://rmex.github.io) [ORMS : Old RPG Maker Style](https://github.com/RMEx/orms/blob/master/orms.rb) v1.1.0
 > Make a RM2K(3)-like game with RMVXAce!
 
+![Screenshot](http://image.noelshack.com/fichiers/2018/08/1/1518996809-rm-fucking-vx-ace.gif)
+
 ***
 
 # ChangeLog
@@ -194,9 +196,13 @@ And since the height is now smaller, you can also reduce the line height :
 Of course you can edit the font you want with Fony, ".fon" or not. But there is some important things to verify before the bitmap exportation!
 
 * You **must** have a **blank row** at the bottom and a **blank column** at the right
+
   ![Screenshot](http://image.noelshack.com/fichiers/2018/07/7/1518994050-fony-blank-row-column.png)
+
   If not, just select all the characters into the right pannel and use the arrows button.
+
 * In **Edit > Properties** (Ctrl + H), you **must** set the **First char** to 0, tue **Last char** to 255 and check **Monospaced**
+
   ![Screenshot](http://image.noelshack.com/fichiers/2018/07/7/1518993684-fony-properties.png)
 
 ---
