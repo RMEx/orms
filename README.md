@@ -7,41 +7,21 @@
 
 ***
 
-# ChangeLog
-
-- `v1.0.0 => 06/02/2018` First release
-- `v1.0.1 => 08/02/2018` RME + Fullscreen++ compatibility
-- `v1.0.3 => 09/02/2018` Change RME issue + clean `TOGGLE_SCREEN_INPUT` + add wrong version number \o/
-- `v1.0.4 => 16/02/2018` Fix transitions + missing update for `PIXELATE_SCREEN`
-- `v1.1.0 => 18/02/2018`
-    - Fix `USE_OLD_RM_...` and `OLDSCHOOL_CHOICE_LIST` issues
-    - Add `Orms.set(feature, state)`, `Orms.activate` and `Orms.deactivate` ingame methods for users
-    - Change `TOGGLE_SCREEN_INPUT` to new `TOGGLE_FULLSCREEN` and `TOGGLE_WINDOW_MODE` features that allow to specify which shortcut you want to set
-    - The shortcuts defined above now change also the `Fullscreen++` shortcuts
-    - Implement dynamic frame skipping for the `PIXELATE_SCREEN` feature!
-    - Implement additional FPS displayer which takes into account the dynamic frame skipping! Display it with `F2`!
-    - Add `PIXELATION_SHORTCUT` feature to set a shortcut that activate/deactivate the screen pixelation ingame!
-    - Add `BACKDROP_ALIGN_TOP` feature to align Battlebacks to top instead of center (for RM2K backdrops)
-- `v1.1.1 => 19/02/2018`**[Current]** Fix `TOGGLE_FULLSCREEN` and `PIXELATION_SHORTCUT` issues
-
-***
-
 # Installation
 
-- Add [the script](https://raw.githubusercontent.com/RMEx/orms/master/orms.rb) in your project
-- Place [Font.png](https://raw.githubusercontent.com/RMEx/orms/master/Font.png) and [Font_color.png](https://raw.githubusercontent.com/RMEx/orms/master/Font_color.png) in the `Graphics/System/` folder
+orms holds in one script and two resources (Font.png and Font_color.png)
+Check-out the [lastest release!](https://github.com/RMEx/orms/releases)
 
 ---
 
 # Configuration
 
-OLD_RM_STYLE is really versatile, see the first module **ORMS_CONFIG** to configure it.
+OLD_RM_STYLE is really versatile, see the first module **ORMS_CONFIG** in the script to configure it!
+**All the features are optional**, just activate the features you want, deactivate the features you don't, and... *enjoy!*
 
 ---
 
 # Features
-
-All the features are **optional**, just activate the features you want in **ORMS_CONFIG** and enjoy!
 
 ## BITMAP_FONT
 
