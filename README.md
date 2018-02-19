@@ -207,19 +207,22 @@ And since the height is now smaller, you can also reduce the line height :
 
 Of course you can edit the font you want with Fony, ".fon" or not. But there is some important things to verify before the bitmap exportation!
 
-* You **must** have a **blank row** at the bottom and a **blank column** at the right
+* You **must** have a **blank row** at the bottom and a **blank column** at the right:
 
   ![Screenshot](http://image.noelshack.com/fichiers/2018/07/7/1518994050-fony-blank-row-column.png)
 
-  If not, just select all the characters into the right pannel and use the arrows button.
+  If not, just **select all the characters** into the right pannel and use the **arrow buttons**.
 
-* In **Edit > Properties** (Ctrl + H), you **must** set the **First char** to 0, tue **Last char** to 255 and check **Monospaced**
+* In **Edit > Properties** (Ctrl + H), you **must** set the **First char** to 0, the **Last char** to 255, and check **Monospaced**:
 
   ![Screenshot](http://image.noelshack.com/fichiers/2018/07/7/1518993684-fony-properties.png)
 
-  If you get a too high width when you convert the font to monospaced (because some characters are too wide like W, w, M, m, Æ, æ), there is a very simple method to reduce the width of all characters at once:
+  **If you get a too wide character width** when you convert the font to **monospaced**, it's because some characters are too wide like W, w, M, m, Æ, æ.
+  There is a very simple method to **reduce the width of all characters at one time**:
 
   ![Screenshot](http://biloucorp.com/BCW/Joke/monospaced.gif)
+
+  When you have an accurate monospaced width, you can stretch manually the cropped fonts that were too wide (like W, w, M, m, Æ, æ) by redrawing them.
 
 ---
 
