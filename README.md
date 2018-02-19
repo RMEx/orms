@@ -1,6 +1,6 @@
 [Join us on Discord!](https://discord.gg/yRUZcdQ)
 
-# [![RMEx](http://rmex.github.io/images/rmex-shortcut.png)](http://rmex.github.io) [ORMS : Old RPG Maker Style](https://github.com/RMEx/orms/blob/master/orms.rb) v1.1.0
+# [![RMEx](http://rmex.github.io/images/rmex-shortcut.png)](http://rmex.github.io) [ORMS : Old RPG Maker Style](https://github.com/RMEx/orms/blob/master/orms.rb) v1.1.1
 > Make a RM2K(3)-like game with RMVXAce!
 
 ![Screenshot](http://image.noelshack.com/fichiers/2018/08/1/1518997135-rm-fucking-vx-ace.gif)
@@ -9,13 +9,12 @@
 
 # ChangeLog
 
-> - `v1.0.0 => 06/02/2018` First release
-> - `v1.0.1 => 08/02/2018` RME + Fullscreen++ compatibility
-> - `v1.0.3 => 09/02/2018` Change RME issue + clean `TOGGLE_SCREEN_INPUT` + add wrong version number \o/
-> - `v1.0.4 => 16/02/2018` Fix transitions + missing update for `PIXELATE_SCREEN`
- - `v1.1.0 => 18/02/2018`**[Current]**
-    - Fix `USE_OLD_RM_...` (did not double the size when the HUE was changed)
-    - Fix `OLDSCHOOL_CHOICE_LIST` (the box wasn't displayed when there were no message displayed before)
+- `v1.0.0 => 06/02/2018` First release
+- `v1.0.1 => 08/02/2018` RME + Fullscreen++ compatibility
+- `v1.0.3 => 09/02/2018` Change RME issue + clean `TOGGLE_SCREEN_INPUT` + add wrong version number \o/
+- `v1.0.4 => 16/02/2018` Fix transitions + missing update for `PIXELATE_SCREEN`
+- `v1.1.0 => 18/02/2018`
+    - Fix `USE_OLD_RM_...` and `OLDSCHOOL_CHOICE_LIST` issues
     - Add `Orms.set(feature, state)`, `Orms.activate` and `Orms.deactivate` ingame methods for users
     - Change `TOGGLE_SCREEN_INPUT` to new `TOGGLE_FULLSCREEN` and `TOGGLE_WINDOW_MODE` features that allow to specify which shortcut you want to set
     - The shortcuts defined above now change also the `Fullscreen++` shortcuts
@@ -23,6 +22,7 @@
     - Implement additional FPS displayer which takes into account the dynamic frame skipping! Display it with `F2`!
     - Add `PIXELATION_SHORTCUT` feature to set a shortcut that activate/deactivate the screen pixelation ingame!
     - Add `BACKDROP_ALIGN_TOP` feature to align Battlebacks to top instead of center (for RM2K backdrops)
+- `v1.1.1 => 19/02/2018`**[Current]** Fix `TOGGLE_FULLSCREEN` and `PIXELATION_SHORTCUT` issues
 
 ***
 

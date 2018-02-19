@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #==============================================================================
-# ** OLD_RM_STYLE  V. 1.1.0
+# ** OLD_RM_STYLE  V. 1.1.1
 #------------------------------------------------------------------------------
 # By Joke @biloumaster <joke@biloucorp.com>
 # GitHub: https://github.com/RMEx/OLD_RM_STYLE
@@ -9,13 +9,6 @@
 # (or the oldschool overkill game that you dreamed for a long time)
 # See the "ORMS_CONFIG" module below to see all the features and configure it!
 # Go on the GitHub page to learn more about the bitmap fonts and the features!
-#------------------------------------------------------------------------------
-# ** Ingame methods:
-#------------------------------------------------------------------------------
-# - Orms.set(feature, state)  # Change the features ingame
-#                               (example: Orms.set(:bitmap_font, false))
-# - Orms.deactivate           # Deactivate all the features
-# - Orms.activate             # Activate all the features (active by default)
 #==============================================================================
 
 #==============================================================================
@@ -47,9 +40,10 @@ module ORMS_CONFIG
     OLD_RESOLUTION        = false # Just set game resolution to 640*480 (to simulate RM2k(3)'s 320*240)
     TOGGLE_FULLSCREEN     = :F4   # The shortcut (:F3..:F11) to toggle the fullscreen mode like RM2k(3)
     TOGGLE_WINDOW_MODE    = :F5   # The shortcut (:F3..:F11) to toggle to TINY 1x WINDOW MODE like RM2k(3)
-                                  #   Set the shortcut to 0 if you want none.
                                   #   Re-define also the Fullscreen++ shortcuts if you use it too.
                                   #   If you use Fullscreen++, place Fullscreen++ right before orms!
+                                  #
+                                  # => Set the shortcut to 0 if you don't want the feature
 
     PIXELATE_SCREEN       = false # If you want fat pixels everywhere!
                                   #   This feature is a bit greedy, but it tries to optimize itself with
@@ -57,9 +51,10 @@ module ORMS_CONFIG
                                   #   display (F2) that shows the real FPS, counting the frame skipping.
 
     PIXELATION_SHORTCUT   = :F6   # The shortcut (:F3..:F11) to activate/deactivate pixelation ingame.
-                                  #   Set the shortcut to 0 if you want none.
                                   #   Don't forget to tell the player he can use this shortcut!
                                   #   An alternative is to use the "Orms.set(:pixelate_screen, false)" method
+                                  #
+                                  # => Set the shortcut to 0 if you don't want the feature
 
   # RESSOURCES_FEATURES:
     USE_OLD_RM_BACKDROP   = false # Battlebacks1/2 auto-resized by two
@@ -80,8 +75,23 @@ end
 
 end
 
+#==============================================================================
+# ** Additional methods for the user:
+#------------------------------------------------------------------------------
+# - Orms.set(feature, state)  # Change the orms' features state when you want
+#                               (example: Orms.set(:bitmap_font, false))
+# - Orms.deactivate           # Deactivate all orms' features when you want
+# - Orms.activate             # Reactivate all orms' features when you want
+# - Orms.active?              # Check if orms is active
+# - Orms.active?(feature)     # Check if orms and the given feature are active
+#                               (example: Orms.active?(:pixelate_screen))
+#==============================================================================
+
 module Orms
   extend self
+  #--------------------------------------------------------------------------
+  # * Change the orms' features state when you want
+  #--------------------------------------------------------------------------
   def set(feature, state)
     feature = feature.to_s.upcase.to_sym
     ORMS_CONFIG.const_set(feature, state)
@@ -94,6 +104,9 @@ module Orms
       end
     end
   end
+  #--------------------------------------------------------------------------
+  # * Deactivate all orms' features when you want
+  #--------------------------------------------------------------------------
   def deactivate
     @active = false
     unless Graphics.orms_screen.nil? || Graphics.orms_screen.disposed?
@@ -103,9 +116,15 @@ module Orms
       SceneManager.scene.create_all_windows
     end
   end
+  #--------------------------------------------------------------------------
+  # * Reactivate all orms' features when you want
+  #--------------------------------------------------------------------------
   def activate
     @active = true
   end
+  #--------------------------------------------------------------------------
+  # * Check if orms and the given feature are active
+  #--------------------------------------------------------------------------
   def active?(feature = true)
     @active = true if @active.nil?
     if feature.is_a?(Symbol)
@@ -117,7 +136,7 @@ module Orms
 end
 
 #==============================================================================
-# ** BITMAP_FONT and USE_OLD_RM_*
+# ** BITMAP_FONT cache and USE_OLD_RM_*
 #------------------------------------------------------------------------------
 #  BITMAP_FONT: Use the bitmap font picture to draw texts
 #  USE_OLD_RM_*: See ORMS_CONFIG > RESSOURCES_FEATURES above
@@ -878,7 +897,7 @@ module ORMS_MESSAGE
   # * Update the displayed message
   #--------------------------------------------------------------------------
   def update
-    create_message_sprite unless @message
+    create_message_sprite if @message.nil? || @message.disposed?
     @timer ||= 0
     @message.opacity == 0 ? @timer = 0 : @timer += 1
     @message.opacity -= 20 if @timer > 30
@@ -905,7 +924,7 @@ module ORMS_MESSAGE
   #--------------------------------------------------------------------------
   def get_message_bitmap(text, color)
     @texts ||= Hash.new
-    if @texts[text].nil?
+    if @texts[text].nil? || @texts[text].is_a?(Bitmap) && @texts[text].disposed?
       begin
         @texts[text] = ORMS_Bitmap.new(200, 30)
       rescue
@@ -932,7 +951,7 @@ module ORMS_MESSAGE
   # * Hide/Show the message
   #--------------------------------------------------------------------------
   def visible=(v)
-    return unless @message
+    return if @message.nil? || @message.disposed?
     @message.visible = v
   end
 end
@@ -1070,6 +1089,7 @@ module Toggle_Screen
     GetWindowRect        = Win32API.new 'user32', 'GetWindowRect', 'ip', 'i'
     GetClientRect        = Win32API.new 'user32', 'GetClientRect', 'ip', 'i'
     GetKeyState          = Win32API.new 'user32', 'GetKeyState', 'p', 'i'
+    KeybdEvent 		       = Win32API.new 'user32.dll', 'keybd_event', 'iill', 'v'
     FindWindow           = Win32API.new'user32', 'FindWindow', 'pp', 'i'
     HWND                 = FindWindow.call 'RGSS Player', 0
     #--------------------------------------------------------------------------
