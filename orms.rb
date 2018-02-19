@@ -1085,11 +1085,11 @@ module Toggle_Screen
     #--------------------------------------------------------------------------
     # * Win32API methods
     #--------------------------------------------------------------------------
-    SetWindowPos 	       = Win32API.new 'user32', 'SetWindowPos', 'iiiiiii', 'i'
+    SetWindowPos         = Win32API.new 'user32', 'SetWindowPos', 'iiiiiii', 'i'
     GetWindowRect        = Win32API.new 'user32', 'GetWindowRect', 'ip', 'i'
     GetClientRect        = Win32API.new 'user32', 'GetClientRect', 'ip', 'i'
     GetKeyState          = Win32API.new 'user32', 'GetKeyState', 'p', 'i'
-    KeybdEvent 		       = Win32API.new 'user32.dll', 'keybd_event', 'iill', 'v'
+    KeybdEvent           = Win32API.new 'user32.dll', 'keybd_event', 'iill', 'v'
     FindWindow           = Win32API.new'user32', 'FindWindow', 'pp', 'i'
     HWND                 = FindWindow.call 'RGSS Player', 0
     #--------------------------------------------------------------------------
