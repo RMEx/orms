@@ -217,6 +217,10 @@ Of course you can edit the font you want with Fony, ".fon" or not. But there is 
 
   ![Screenshot](http://image.noelshack.com/fichiers/2018/07/7/1518993684-fony-properties.png)
 
+  If you get a too high width when you convert the font to monospaced (because some characters are too wide like W, w, M, m, Æ, æ), there is a very simple method to reduce the width of all characters at once:
+
+  ![Screenshot](http://biloucorp.com/BCW/Joke/monospaced.gif)
+
 ---
 
 # COMING SOON!
