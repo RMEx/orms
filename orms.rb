@@ -195,7 +195,9 @@ module Cache
     # * Get Bitmap Font
     #--------------------------------------------------------------------------
     def bitmap_font
-      @cache[:bitmap_font] ||= generate_bitmap_font
+      if !@cache[:bitmap_font] || @cache[:bitmap_font].disposed?
+-       @cache[:bitmap_font] = generate_bitmap_font
+-     end
     end
     #--------------------------------------------------------------------------
     # * Load Bitmap
