@@ -128,7 +128,7 @@ module Orms
   def active?(feature = true)
     @active = true if @active.nil?
     if feature.is_a?(Symbol)
-      feature = feature.to_s.upcase.to_sym
+      feature = feature.upcase
       feature = ORMS_CONFIG.const_get(feature)
     end
     @active && feature
@@ -195,9 +195,6 @@ module Cache
     # * Get Bitmap Font
     #--------------------------------------------------------------------------
     def bitmap_font
-      if @cache[:bitmap_font] && @cache[:bitmap_font].disposed?
-        @cache[:bitmap_font] = generate_bitmap_font
-      end
       @cache[:bitmap_font] ||= generate_bitmap_font
     end
     #--------------------------------------------------------------------------
@@ -428,7 +425,7 @@ class Window_Base
     unless Orms.active?(:bitmap_font)
       return orms_calc_line_height(text, restore_font_size)
     end
-    return line_height
+    line_height
   end
   #--------------------------------------------------------------------------
   # * Get Line Height
@@ -436,7 +433,7 @@ class Window_Base
   alias_method :orms_line_height, :line_height
   def line_height
     return orms_line_height unless Orms.active?(:bitmap_font)
-    return ORMS_CONFIG::LINE_HEIGHT
+    ORMS_CONFIG::LINE_HEIGHT
   end
 end
 
@@ -479,35 +476,35 @@ class Window_Message
   alias_method :orms_standard_padding, :standard_padding
   def standard_padding
     return orms_standard_padding unless Orms.active?(:bitmap_font)
-    return ORMS_CONFIG::PADDING
+    ORMS_CONFIG::PADDING
   end
 end
 class Window_ActorCommand
   alias_method :orms_standard_padding, :standard_padding
   def standard_padding
     return orms_standard_padding unless Orms.active?(:bitmap_font)
-    return ORMS_CONFIG::PADDING
+    ORMS_CONFIG::PADDING
   end
 end
 class Window_BattleStatus
   alias_method :orms_standard_padding, :standard_padding
   def standard_padding
     return orms_standard_padding unless Orms.active?(:bitmap_font)
-    return ORMS_CONFIG::PADDING
+    ORMS_CONFIG::PADDING
   end
 end
 class Window_BattleEnemy
   alias_method :orms_standard_padding, :standard_padding
   def standard_padding
     return orms_standard_padding unless Orms.active?(:bitmap_font)
-    return ORMS_CONFIG::PADDING
+    ORMS_CONFIG::PADDING
   end
 end
 class Window_PartyCommand
   alias_method :orms_standard_padding, :standard_padding
   def standard_padding
     return orms_standard_padding unless Orms.active?(:bitmap_font)
-    return ORMS_CONFIG::PADDING
+    ORMS_CONFIG::PADDING
   end
 end
 
@@ -777,7 +774,7 @@ class Game_CharacterBase
   alias_method :orms_shift_y, :shift_y
   def shift_y
     return orms_shift_y unless Orms.active?(:kill_charset_shift_y)
-    return 0
+    0
   end
 end
 end
@@ -1232,8 +1229,7 @@ class Game_Player
   #--------------------------------------------------------------------------
   alias_method :orms_dash?, :dash?
   def dash?
-    return orms_dash? unless Orms.active?(:deactivate_dash)
-    return false
+    !Orms.active?(:deactivate_dash) && orms_dash?
   end
 end
 
