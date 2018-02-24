@@ -95,7 +95,7 @@ module Orms
   def set(feature, state)
     feature = feature.to_s.upcase.to_sym
     ORMS_CONFIG.const_set(feature, state)
-    if [feature, state] == [:PIXELATE_SCREEN, false] && Graphics.const_defined?(:orms_screen)
+    if Graphics.respond_to?(:orms_screen) && [feature, state] == [:PIXELATE_SCREEN, false]
       Graphics.orms_screen.dispose unless Graphics.orms_screen.nil?
     end
     if SceneManager.scene.is_a?(Scene_Map) || SceneManager.scene.is_a?(Scene_Battle)
@@ -109,7 +109,7 @@ module Orms
   #--------------------------------------------------------------------------
   def deactivate
     @active = false
-    if Graphics.const_defined?(:orms_screen) && Graphics.orms_screen
+    if Graphics.respond_to?(:orms_screen) && Graphics.orms_screen
       Graphics.orms_screen.dispose
     end
     if SceneManager.scene.is_a?(Scene_Map) || SceneManager.scene.is_a?(Scene_Battle)
@@ -438,6 +438,10 @@ if ORMS_CONFIG::BITMAP_FONT
       ORMS_CONFIG::LINE_HEIGHT
     end
   end
+
+  #==============================================================================
+  # ** REWRITE ALL TEXTS or Window_Base only
+  #==============================================================================
 
   if ORMS_CONFIG::REWRITE_ALL_TEXTS
     class Bitmap
@@ -833,32 +837,57 @@ if ORMS_CONFIG::PIXELATE_SCREEN
     #--------------------------------------------------------------------------
     # * Public instance variables
     #--------------------------------------------------------------------------
-    attr_reader :screen_fps, :rgss_fps, :visible
+    attr_reader :fps, :ups, :ups2, :visible
     attr_accessor :previous_time
     #--------------------------------------------------------------------------
     # * Update rate: Number of times the FPS is calculated per second
     #--------------------------------------------------------------------------
-    UPDATE_RATE = 1.0
+    UPDATE_RATE = 2.0
     #--------------------------------------------------------------------------
     # * Update
     #--------------------------------------------------------------------------
     def update
+      update_ups
+      update_ups2
+    end
+    #--------------------------------------------------------------------------
+    # * Graphics.updates per second calculation
+    #--------------------------------------------------------------------------
+    def update_ups
       @frame_count ||= 0
       @frame_count += 1
       dt = Time.now - @previous_time
       if dt >= 1.0 / UPDATE_RATE
-        @rgss_fps = (@frame_count / dt).round
-        if Orms.active?(:pixelate_screen)
-          sframe_count = Graphics.frame_counter || Graphics.frame_rate
-          @screen_fps = (sframe_count / dt).round
-        else
-          @screen_fps = @rgss_fps
-        end
-        Graphics.frame_counter = 0
+        @ups = (@frame_count / dt).round
+        @ups = [@ups, Graphics.frame_rate + 10].min
+        update_fps(dt)
         @frame_count = 0
         @previous_time = Time.now
         update_counter
       end
+    end
+    #--------------------------------------------------------------------------
+    # * Graphics.updates real time frequency
+    #--------------------------------------------------------------------------
+    def update_ups2
+      @previous_time2 ||= @previous_time
+      dt = Time.now - @previous_time2
+      if dt >= 1.0 / Graphics.frame_rate
+        @ups2 = (1.0 / dt).round
+        @previous_time2 = Time.now
+      end
+    end
+    #--------------------------------------------------------------------------
+    # * Pixelated frames per second
+    #--------------------------------------------------------------------------
+    def update_fps(dt)
+      if Orms.active?(:pixelate_screen)
+        sframe_count = Graphics.frame_counter || Graphics.frame_rate
+        @fps = (sframe_count / dt).round
+      else
+        @fps = @ups
+      end
+      Graphics.frame_counter = 0
     end
     #--------------------------------------------------------------------------
     # * Initialize the displayed counter
@@ -887,7 +916,7 @@ if ORMS_CONFIG::PIXELATE_SCREEN
       if @counter.nil? || @counter.disposed?
         @visible ? initialize_counter : return
       end
-      text = [@rgss_fps, @screen_fps].uniq
+      text = [@ups, @fps].uniq
       size  = @counter.bitmap.text_size(text.join("~"))
       size2 = @counter.bitmap.text_size(text[0].to_s) if text.length == 2
       @background.zoom_x = size.width  + 4
@@ -1003,12 +1032,18 @@ if ORMS_CONFIG::PIXELATE_SCREEN
     alias_method :orms_graphics_update, :update
     def update
       ORMS_FPS.previous_time ||= Time.now
-      update_screen_display
-      if respond_to?(:zeus_fullscreen_update)
-        release_alt if Disable_VX_Fullscreen and Input.trigger?(Input::ALT)
-        zeus_fullscreen_update
+      @skip = ORMS_FPS.ups && ORMS_FPS.ups < (frame_rate - 10) && ORMS_FPS.ups2 < (frame_rate / 2)
+      unless @skip
+        if respond_to?(:zeus_fullscreen_update)
+          update_screen_display
+          release_alt if Disable_VX_Fullscreen and Input.trigger?(Input::ALT)
+          zeus_fullscreen_update
+        else
+          update_screen_display
+          orms_graphics_update
+        end
       else
-        orms_graphics_update
+        frame_reset
       end
       ORMS_FPS.update
       ORMS_MESSAGE.update
@@ -1020,22 +1055,30 @@ if ORMS_CONFIG::PIXELATE_SCREEN
     def update_screen_display
       return unless Orms.active?(:pixelate_screen)
       @timer ||= 0
-      fps = ORMS_FPS.rgss_fps || frame_rate
-      fps = [fps, frame_rate].min
-      @timer = 0 if @timer >= (frame_rate.to_f / [fps, 20].max).round
+      ups = ORMS_FPS.ups || frame_rate
+      ups = [ups, frame_rate].min
+      @timer = 0 if @timer >= (frame_rate.to_f / [ups, 20].max).round
       if @timer == 0
         pixelate_screen
         @frame_counter ||= 0
         @frame_counter += 1
       end
       @timer += 1
-      frame_reset unless fps >= frame_rate - 10
     end
     #--------------------------------------------------------------------------
     # * Pixelate the screen
     #--------------------------------------------------------------------------
     def pixelate_screen
       return unless Orms.active?(:pixelate_screen)
+      if respond_to?(:screen) && screen
+        esc = [screen.blur, screen.motion_blur, screen.pixelation, screen.zoom]
+        if esc && esc != [0, 0, 1, 100]
+          screen.update_filters
+          return @orms_screen && !@orms_screen.disposed? && @orms_screen.visible = false
+        else
+          @orms_screen && !@orms_screen.disposed? && @orms_screen.visible = true
+        end
+      end
       w, h = Graphics.width / 2, Graphics.height / 2
       if @orms_screen.nil? || @orms_screen.disposed?
         @orms_screen = Sprite.new
@@ -1309,5 +1352,111 @@ if $imported && $imported[:Zeus_Fullscreen]
       end
     end
   rescue
+  end
+end
+
+#==============================================================================
+# ** RME (RMEx) ScreenEffects compatibility
+#------------------------------------------------------------------------------
+#  Get RME:
+# https://github.com/RMEx/RME
+#==============================================================================
+
+if Module.const_defined?(:RME)
+  if ORMS_CONFIG::PIXELATE_SCREEN
+    module ScreenEffects
+      class Screen
+        def update
+          return if disposed?
+          update_transitions
+          if !SceneManager.scene_is?(Scene_Map) || [@blur, @motion_blur, @pixelation, @zoom] == [0, 0, 1, 100]
+            return self.visible = false
+          end
+        end
+        def update_filters
+          update_zoom_target
+          update_capture_rect
+          update_pixelation
+          update_bitmap
+        end
+      end
+    end
+  end
+  if ORMS_CONFIG::REWRITE_ALL_TEXTS
+    module Gui
+      module Components
+        class Text_Field
+          def create_sprite
+            @sprite = Sprite.new
+            @sprite.bitmap = Bitmap.new(1,1)
+            @sprite.bitmap.font = @font
+            @split_format = 640 / @sprite.bitmap.orms_text_size("W").width
+          end
+          def create_viewport
+            @h = @sprite.bitmap.orms_text_size("W").height
+            @viewport = Viewport.new(@x,@y,@w,@h)
+            @sprite.viewport = @viewport
+          end
+          def update_bitmap
+            text = value
+            text = " " if text.empty?
+            rect = @sprite.bitmap.orms_text_size(text)
+            @sprite.bitmap.dispose
+            @sprite.bitmap = Bitmap.new(rect.width, rect.height)
+            @sprite.bitmap.font = @font
+            last_x = 0
+            text.split_each(@split_format).each do |a_text|
+              rect = @sprite.bitmap.orms_text_size(a_text)
+              rect.x = last_x
+              @sprite.bitmap.orms_draw_text(rect, a_text)
+              last_x += rect.width
+            end
+          end
+          def update_cursor_pos
+            @cursor_timer = 0
+            pos = @text.virtual_position
+            if pos == 0
+              @cursor.x = 1
+            else
+              @cursor.x = @sprite.bitmap.orms_text_size(value[0...pos]).width
+            end
+          end
+          def update_selection_rect
+            pos = @text.selection_start
+            if pos == 0
+              @selection_rect.x = 1
+            else
+              @selection_rect.x = @sprite.bitmap.orms_text_size(value[0...pos]).width
+            end
+            delta = @cursor.x - @selection_rect.x
+            @selection_rect.zoom_x = delta.abs
+            @selection_rect.x += delta if delta < 0
+          end
+          def approach(a, x, memoa=a, memob=0)
+            bound = a.bound(0,value.length)
+            return bound if bound != a
+            b = @sprite.bitmap.orms_text_size(value[0...a]).width
+            return a if (b-x) == 0 || (b-x)==(x-memob)
+            return memoa if (b-x).abs > (memob-x).abs
+            approach(a + (0 <=> (b-x)), x, a, b)
+          end
+        end
+      end
+      class Label
+        def initialize_text(txt)
+          return unless @sprite_text
+          txt ||= ""
+          fon = @style[:font]
+          bmp = Bitmap.new(1,1)
+          bmp.font = fon
+          size = bmp.orms_text_size(txt)
+          @sprite_text.bitmap = Bitmap.new(size.width, size.height)
+          @sprite_text.bitmap.font = fon
+          @sprite_text.bitmap.orms_draw_text(size, txt)
+          @style[:width]  = size.width
+          @style[:height] = size.height
+        end
+      end
+    end
   end
 end
