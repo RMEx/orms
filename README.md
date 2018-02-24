@@ -10,7 +10,7 @@
 # Installation
 
 orms holds in one script and two resources (Font.png and Font_color.png)
-Check-out the [lastest release!](https://github.com/RMEx/orms/releases)
+Check-out the [lastest release!](https://github.com/RMEx/orms/releases/latest)
 
 ---
 
