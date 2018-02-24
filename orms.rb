@@ -350,12 +350,14 @@ module ORMS_Bitmap_Font
           s = ORMS_CONFIG::DOUBLE_FONT_SIZE ? 2 : 1
           w = ORMS_CONFIG::FONT_WIDTH
           h = ORMS_CONFIG::FONT_HEIGHT
+          bmp  = Cache.bitmap_font
+          char = 1 if char.ord > bmp.width / w - 1
           dest = Rect.new(x, y, w * s, h * s)
           src  = Rect.new(char.ord * w, color_id * h, w, h)
           if ORMS_CONFIG::REWRITE_ALL_TEXTS
-            stretch_blt(dest, Cache.bitmap_font, src)
+            stretch_blt(dest, bmp, src)
           else
-            contents.stretch_blt(dest, Cache.bitmap_font, src)
+            contents.stretch_blt(dest, bmp, src)
           end
         end
       end
@@ -468,7 +470,8 @@ if ORMS_CONFIG::BITMAP_FONT
     #--------------------------------------------------------------------------
     # * Write "Pge" instead of "Page"
     #--------------------------------------------------------------------------
-    LATIN1[88] = LATIN2[88] = 'Pge'
+    LATIN1[88] = 'Nx'
+    LATIN2[88] = 'Pr'
     #--------------------------------------------------------------------------
     # * Get Line Height
     #--------------------------------------------------------------------------
