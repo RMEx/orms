@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #==============================================================================
-# ** OLD_RM_STYLE  V. 1.1.1
+# ** OLD_RM_STYLE  V. 1.1.2
 #------------------------------------------------------------------------------
 # By Joke @biloumaster <joke@biloucorp.com>
 # GitHub: https://github.com/RMEx/OLD_RM_STYLE
@@ -195,9 +195,10 @@ module Cache
     # * Get Bitmap Font
     #--------------------------------------------------------------------------
     def bitmap_font
-      if !@cache[:bitmap_font] || @cache[:bitmap_font].disposed?
+      if @cache[:bitmap_font] && @cache[:bitmap_font].disposed?
         @cache[:bitmap_font] = generate_bitmap_font
       end
+      @cache[:bitmap_font] ||= generate_bitmap_font
     end
     #--------------------------------------------------------------------------
     # * Load Bitmap
