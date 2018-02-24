@@ -1244,35 +1244,37 @@ end
 # https://forums.rpgmakerweb.com/index.php?threads/fullscreen.14081/
 #==============================================================================
 
-begin
-  class << Graphics
-    alias_method :zeus_save_fullscreen_settings, :save_fullscreen_settings
-    def save_fullscreen_settings
-      @half = @windowed_ratio = 1 if @windowed_ratio == 0.5
-      zeus_save_fullscreen_settings
-      @windowed_ratio = 0.5 if @half == 1
-      @half = 0
-    end
-    alias_method :zeus_set_ratio, :ratio=
-    def ratio=(r)
-      r = 0.5 if ratio == 0 unless fullscreen?
-      r = 1 if r == 1.5
-      zeus_set_ratio(r)
-    end
-    unless Module.const_defined?(:ORMS_MESSAGE)
-      def update
-        release_alt if Disable_VX_Fullscreen and Input.trigger?(Input::ALT)
-        zeus_fullscreen_update
+if $imported && $imported[:Zeus_Fullscreen]
+  begin
+    class << Graphics
+      alias_method :zeus_save_fullscreen_settings, :save_fullscreen_settings
+      def save_fullscreen_settings
+        @half = @windowed_ratio = 1 if @windowed_ratio == 0.5
+        zeus_save_fullscreen_settings
+        @windowed_ratio = 0.5 if @half == 1
+        @half = 0
+      end
+      alias_method :zeus_set_ratio, :ratio=
+      def ratio=(r)
+        r = 0.5 if ratio == 0 unless fullscreen?
+        r = 1 if r == 1.5
+        zeus_set_ratio(r)
+      end
+      unless Module.const_defined?(:ORMS_MESSAGE)
+        def update
+          release_alt if Disable_VX_Fullscreen and Input.trigger?(Input::ALT)
+          zeus_fullscreen_update
+        end
       end
     end
-  end
-  module Toggle_Screen
-    def self.toggle_size
-      Graphics.toggle_ratio
+    module Toggle_Screen
+      def self.toggle_size
+        Graphics.toggle_ratio
+      end
+      def self.toggle_fullscreen
+        Graphics.toggle_fullscreen
+      end
     end
-    def self.toggle_fullscreen
-      Graphics.toggle_fullscreen
-    end
+  rescue
   end
-rescue
 end
