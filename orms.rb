@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #==============================================================================
-# ** OLD_RM_STYLE  V. 1.1.2
+# ** OLD_RM_STYLE  v1.1.2
 #------------------------------------------------------------------------------
 # By Joke @biloumaster <joke@biloucorp.com>
 # GitHub: https://github.com/RMEx/OLD_RM_STYLE
