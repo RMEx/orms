@@ -211,14 +211,24 @@ Of course you can edit the font you want with Fony, ".fon" or not. But there is 
 **TODO LIST:**
 
 - [x] **Verify/fix** compatibility between `PIXELATE_SCREEN` and some nervous scripts
-    - [-] RME (camera commands)
+    - [x] RME (camera commands)
     - [x] Luna Engine
     - [ ] Theo's Sideview battle system
     - [ ] MGC's mode 7
-- [ ] **Add** methods to set a `start_transition` and a `end_transition` in events for teleports and... reproduce all RM(2)K3 start/end transitions? :D
-- [ ] **Change** `STOP_CURSOR_BLINKING` to fancy new `OLD_RM_CURSOR_BLINKING` (use a new system picture to make oldschool blink like RM2k(3) (graphical switch blinking))
-- [ ] **Add** the feature `ICONS_FOR_ALL_TEXTS` to use `\I[id]` code like in dialogues, but for everything (name/description of objects, skills, etc) like RM2K(3) did with glyphs
-- [ ] **Add** the feature `NO_MAP_SHADOWS` to deactivate the VXA shadow display in maps ingame.
-- [ ] [orms-converter](https://github.com/RMEx/orms-converter)
-- [ ] Sleep
-- [ ] Any suggestion? ...Bug report? Feel free to [create an issue](https://github.com/RMEx/orms-converter/issues) or contact me [on Discord!](https://discord.gg/yRUZcdQ)
+- [x] **Fix** name input
+- [ ] **Fix** current feature status not saved in save files yet
+- [ ] **Fix** characters direction in save/load menus (when `OLD_CHARSET_DIRECTION` is used)
+- [ ] **Add** the feature `NO_MAP_SHADOWS` in `DESTROY_NEW_RM_FEATURES` to deactivate the VXA shadow display in maps ingame
+- [ ] **Extend** `OLD_CHARSET_DIRECTION` behaviour: Will not change the directions of the Characters that the first character of their names is `'@'`.
+- [ ] **Implement** `ICONS_FOR_ALL_TEXTS` feature to use the `\I[id]` control character for everything like RM2K(3) did with glyphs ($a..$Z)
+- [ ] **Implement** `BITMAP_FONT_FEATURE_OPTIONS`:
+    - [ ] **Define** `BITMAP_FONTS = [args_1, args_2, args_3]` option with `args_X` equal to `[name, *char_width, *char_height, *color_set, *nb_color_max, *shadow]`, for instance, `args_1` will be equal to `["Font"]` (The default font name)
+    - [ ] **Define** `CURRENT_BMP_FONT`, `DEFAULT_COLOR_SET`, `DEFAULT_FONT_WIDTH`, `DEFAULT_FONT_HEIGHT`, `DEFAULT_SHADOW` options (the last three will replace `FONT_WIDTH`, `FONT_HEIGHT` and `SHADOW`)
+    - [ ] **Define** `\F[id]` control character to change the BMP\_FONT in the middle of **any** text
+    - [ ] **Extend** `LINE_HEIGHT` behaviour: will be defined by an integer (like now) or the array `[top_margin, bottom_margin]` instead.
+    For instance, `LINE_HEIGHT` will be equal to `LINE_HEIGHT[0] + font[:height] + LINE_HEIGHT[1]`).
+- [ ] **Implement** RM2k(3)-like **transitions** features and methods that reproduce and extend all transitions behaviours from RM2k(3)! :D
+- [ ] **Implement** `OLD_RM_CURSOR` feature (use a second System/Window picture to make oldschool blink like RM2k(3) (graphical switch blinking)) - Will replace the actual `STOP_CURSOR_BLINKING`
+- [ ] **Develop** [orms-converter](https://github.com/RMEx/orms-converter)
+- [ ] **Sleep**
+- [ ] **Any suggestion? ...Bug report?** Feel free to [create an issue](https://github.com/RMEx/orms-converter/issues) or contact me [on Discord!](https://discord.gg/yRUZcdQ)
