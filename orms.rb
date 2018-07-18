@@ -17,11 +17,11 @@
 
 unless Module.const_defined?(:ORMS_CONFIG)
 
-  module ORMS_CONFIG  
+  module ORMS_CONFIG
 
     # BITMAP_FONT_FEATURE:
       BITMAP_FONT           = true  # Use the bitmap font picture to draw texts if true
-    
+
     # BITMAP_FONT_FEATURE_OPTIONS:
       FONT_WIDTH            = 6     # See BMP Font character's width
       FONT_HEIGHT           = 14    # See BMP Font character's height
@@ -35,7 +35,7 @@ unless Module.const_defined?(:ORMS_CONFIG)
       OPAQUE_BOX            = false # Opaque text box if true
       STOP_CURSOR_BLINKING  = true  # Stop cursor blinking if true
       OLDSCHOOL_CHOICE_LIST = true  # RM2K(3)-like choice list like if true
-    
+
     # SCREEN_FEATURES:
       OLD_RESOLUTION        = false # Just set game resolution to 640*480 (to simulate RM2k(3)'s 320*240)
       TOGGLE_FULLSCREEN     = :F4   # The shortcut (:F3..:F11) to toggle the fullscreen mode like RM2k(3)
@@ -70,7 +70,7 @@ unless Module.const_defined?(:ORMS_CONFIG)
                                     #   this fix allows you to use directly charsets from 2k(3)!
     # DESTROY_NEW_RM_FEATURE:
       DEACTIVATE_DASH       = false # No dash when you press shift if true
-    
+
   end
 
 end
