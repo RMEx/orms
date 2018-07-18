@@ -639,10 +639,10 @@ end
 if ORMS_CONFIG::STOP_CURSOR_BLINKING
 
   #==============================================================================
-  # ** Window
+  # ** Window_Selectable
   #==============================================================================
 
-  class Window
+  class Window_Selectable
     #--------------------------------------------------------------------------
     # * The cursor's blink status
     #--------------------------------------------------------------------------
@@ -656,14 +656,6 @@ if ORMS_CONFIG::STOP_CURSOR_BLINKING
       return orms_blink_active(index) unless Orms.active?(:stop_cursor_blinking)
       orms_blink_active(false)
       @active = index
-    end
-    #--------------------------------------------------------------------------
-    # * The cursor box (Rect)
-    #--------------------------------------------------------------------------
-    alias_method :orms_blink_cursor_rect, :cursor_rect
-    def cursor_rect
-      orms_blink_active(false) if Orms.active?(:stop_cursor_blinking)
-      orms_blink_cursor_rect
     end
   end
 
