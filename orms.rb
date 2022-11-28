@@ -1197,28 +1197,28 @@ module Toggle_Screen
     def check_input
       initialize_shortcuts
       # check_fullscreen_shortcut
-      if GetKeyState.call(@tf_sc) < 0 && Orms.active?(:toggle_fullscreen)
+      if ![0,1].include?(GetKeyState.call(@tf_sc)) && Orms.active?(:toggle_fullscreen)
         toggle_fullscreen unless @tf
         @tf = true
       else
         @tf = false
       end
       # check_window_mode_shortcut
-      if GetKeyState.call(@tw_sc) < 0 && Orms.active?(:toggle_window_mode)
+      if ![0,1].include?(GetKeyState.call(@tw_sc)) && Orms.active?(:toggle_window_mode)
         toggle_size unless @tw || @fullscreen
         @tw = true
       else
         @tw = false
       end
       # check_pixelation_shortcut
-      if GetKeyState.call(@ps_sc) < 0 && Orms.active?(:pixelation_shortcut)
+      if ![0,1].include?(GetKeyState.call(@ps_sc)) && Orms.active?(:pixelation_shortcut)
         toggle_pixelation unless @ps
         @ps = true
       else
         @ps = false
       end
       # check_fps_display_shortcut
-      if GetKeyState.call(0x71) < 0 && Module.const_defined?(:ORMS_FPS)
+      if ![0,1].include?(GetKeyState.call(0x71)) && Module.const_defined?(:ORMS_FPS)
         ORMS_FPS.toggle_display unless @fp
         @fp = true
       else
