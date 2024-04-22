@@ -97,26 +97,26 @@ Method | Description
 
 # Examples
 
-![Screenshot](https://cdn.discordapp.com/attachments/410124292244766741/410207355993849867/unknown.png)
-![Screenshot](https://cdn.discordapp.com/attachments/410124292244766741/410206525961797644/unknown.png)
+![Screenshot](presentation/exemple1.png)
+![Screenshot](presentation/exemple2.png)
 
 > Example of the **OLDSCHOOL_CHOICE_LIST** and **TOGGLE_WINDOW_MODE** features
 
-![Screenshot](https://cdn.discordapp.com/attachments/166299388799483904/409870616691212289/unknown.png)
+![Screenshot](presentation/exemple3.png)
 
 > Example of the **DOUBLE_FONT_SIZE** feature (false)
 
-![Screenshot](https://cdn.discordapp.com/attachments/166299388799483904/409871176681127936/unknown.png)
+![Screenshot](presentation/exemple4.png)
 
 > Example of the default menu displayed with the **BITMAP_FONT** feature
 
-![Screenshot](https://cdn.discordapp.com/attachments/410183660520865793/413601725966974976/unknown.png)
-![Screenshot](https://cdn.discordapp.com/attachments/410183660520865793/413601891281272832/unknown.png)
-![Screenshot](https://cdn.discordapp.com/attachments/410183660520865793/413601963465375744/unknown.png)
+![Screenshot](presentation/exemple5.png)
+![Screenshot](presentation/exemple6.png)
+![Screenshot](presentation/exemple7.png)
 
 > Examples of a game using orms and Luna Engine (by **JosephSeraph**)
 
-![Screenshot](https://cdn.discordapp.com/attachments/410183660520865793/410261416956657675/unknown.png)
+![Screenshot](presentation/exemple8.png)
 
 > Example of a **beautiful customized** bitmap font (by **JosephSeraph**)
 
@@ -130,27 +130,27 @@ For example :
 
 1. load "Bilou2k3.fon" with Fony
 
-![Fony](https://cdn.discordapp.com/attachments/409692938164240385/409863729895702528/unknown.png)
+![Fony](presentation/fony1.png)
 
 2. Use **Edit > resize** to make a smaller font in height
 
-![Fony](https://cdn.discordapp.com/attachments/166299388799483904/410158056631173121/unknown.png)
+![Fony](presentation/fony2.png)
 
-![Fony](https://cdn.discordapp.com/attachments/166299388799483904/410158136566087680/unknown.png)
+![Fony](presentation/fony3.png)
 
 3. Use **Edit > Boldify**... why not?
 
-![Fony](https://cdn.discordapp.com/attachments/166299388799483904/410158494935810048/unknown.png)
+![Fony](presentation/fony4.png)
 
 After that you need to have **all the bottom line transparent** for all the characters, to render the text shadow without trouble after
 
 4. Select all the characters in the right pannel
 
-![Fony](https://cdn.discordapp.com/attachments/166299388799483904/410158956892127232/unknown.png)
+![Fony](presentation/fony5.png)
 
 5. Then press the **"up"** button
 
-![Fony](https://cdn.discordapp.com/attachments/166299388799483904/410159035229405195/unknown.png)
+![Fony](presentation/fony6.png)
 
 **NOTE :** You also need to have **all the right column transparent** for all the characters, to render the text shadow without trouble!
 
@@ -200,7 +200,7 @@ Of course you can edit the font you want with Fony, ".fon" or not. But there is 
   **If you get a too wide character width** when you convert the font to **monospaced**, it's because some characters are too wide like W, w, M, m, Æ, æ.
   There is a very simple method to **reduce the width of all characters at one time**:
 
-  ![Screenshot](http://biloucorp.com/BCW/Joke/monospaced.gif)
+  ![Screenshot](presentation/fony9.gif)
 
   When you have an accurate monospaced width, you can stretch manually the cropped fonts that were too wide (like W, w, M, m, Æ, æ) by redrawing them.
 
